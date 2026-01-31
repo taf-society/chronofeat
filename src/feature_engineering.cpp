@@ -1,23 +1,31 @@
-#include <RcppArmadillo.h>
-using namespace Rcpp;
-using namespace arma;
+#include <cpp11.hpp>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+#include <string>
 
-// [[Rcpp::depends(RcppArmadillo)]]
+using namespace cpp11;
+
+// Helper: check if value is NA
+inline bool is_na(double x) {
+  return ISNA(x) || ISNAN(x);
+}
 
 //' Compute lag features efficiently
 //'
 //' @param x Numeric vector to compute lags from
 //' @param lags Integer vector of lag positions
 //' @return Matrix where each column is a lag
-// [[Rcpp::export]]
-NumericMatrix compute_lags_cpp(NumericVector x, IntegerVector lags) {
-  int n = x.size();
-  int n_lags = lags.size();
-  NumericMatrix result(n, n_lags);
+[[cpp11::register]]
+doubles_matrix<> compute_lags_cpp(doubles x, integers lags) {
+  R_xlen_t n = x.size();
+  R_xlen_t n_lags = lags.size();
 
-  for (int j = 0; j < n_lags; j++) {
+  writable::doubles_matrix<> result(n, n_lags);
+
+  for (R_xlen_t j = 0; j < n_lags; j++) {
     int lag = lags[j];
-    for (int i = 0; i < n; i++) {
+    for (R_xlen_t i = 0; i < n; i++) {
       if (i < lag) {
         result(i, j) = NA_REAL;
       } else {
@@ -34,22 +42,23 @@ NumericMatrix compute_lags_cpp(NumericVector x, IntegerVector lags) {
 //' @param x Numeric vector
 //' @param windows Integer vector of window sizes
 //' @return Matrix where each column is an MA with different window
-// [[Rcpp::export]]
-NumericMatrix compute_ma_cpp(NumericVector x, IntegerVector windows) {
-  int n = x.size();
-  int n_windows = windows.size();
-  NumericMatrix result(n, n_windows);
+[[cpp11::register]]
+doubles_matrix<> compute_ma_cpp(doubles x, integers windows) {
+  R_xlen_t n = x.size();
+  R_xlen_t n_windows = windows.size();
 
-  for (int j = 0; j < n_windows; j++) {
+  writable::doubles_matrix<> result(n, n_windows);
+
+  for (R_xlen_t j = 0; j < n_windows; j++) {
     int w = windows[j];
-    for (int i = 0; i < n; i++) {
+    for (R_xlen_t i = 0; i < n; i++) {
       if (i < w - 1) {
         result(i, j) = NA_REAL;
       } else {
         double sum = 0.0;
         int count = 0;
         for (int k = 0; k < w; k++) {
-          if (!NumericVector::is_na(x[i - k])) {
+          if (!is_na(x[i - k])) {
             sum += x[i - k];
             count++;
           }
@@ -68,28 +77,27 @@ NumericMatrix compute_ma_cpp(NumericVector x, IntegerVector windows) {
 //' @param windows Integer vector of window sizes
 //' @return Matrix where each column is a rolling sum
 //' @details Returns NA if the window is incomplete OR if all values in the window are NA.
-//'          This matches the R behavior where sum of all-NA with na.rm handling returns NA.
-// [[Rcpp::export]]
-NumericMatrix compute_rollsum_cpp(NumericVector x, IntegerVector windows) {
-  int n = x.size();
-  int n_windows = windows.size();
-  NumericMatrix result(n, n_windows);
+[[cpp11::register]]
+doubles_matrix<> compute_rollsum_cpp(doubles x, integers windows) {
+  R_xlen_t n = x.size();
+  R_xlen_t n_windows = windows.size();
 
-  for (int j = 0; j < n_windows; j++) {
+  writable::doubles_matrix<> result(n, n_windows);
+
+  for (R_xlen_t j = 0; j < n_windows; j++) {
     int w = windows[j];
-    for (int i = 0; i < n; i++) {
+    for (R_xlen_t i = 0; i < n; i++) {
       if (i < w - 1) {
         result(i, j) = NA_REAL;
       } else {
         double sum = 0.0;
         int count = 0;
         for (int k = 0; k < w; k++) {
-          if (!NumericVector::is_na(x[i - k])) {
+          if (!is_na(x[i - k])) {
             sum += x[i - k];
             count++;
           }
         }
-        // Return NA if all values in window are NA
         result(i, j) = (count > 0) ? sum : NA_REAL;
       }
     }
@@ -103,15 +111,16 @@ NumericMatrix compute_rollsum_cpp(NumericVector x, IntegerVector windows) {
 //' @param x Numeric vector
 //' @param windows Integer vector of window sizes
 //' @return Matrix where each column is a rolling SD
-// [[Rcpp::export]]
-NumericMatrix compute_rollsd_cpp(NumericVector x, IntegerVector windows) {
-  int n = x.size();
-  int n_windows = windows.size();
-  NumericMatrix result(n, n_windows);
+[[cpp11::register]]
+doubles_matrix<> compute_rollsd_cpp(doubles x, integers windows) {
+  R_xlen_t n = x.size();
+  R_xlen_t n_windows = windows.size();
 
-  for (int j = 0; j < n_windows; j++) {
+  writable::doubles_matrix<> result(n, n_windows);
+
+  for (R_xlen_t j = 0; j < n_windows; j++) {
     int w = windows[j];
-    for (int i = 0; i < n; i++) {
+    for (R_xlen_t i = 0; i < n; i++) {
       if (i < w - 1) {
         result(i, j) = NA_REAL;
       } else {
@@ -120,7 +129,7 @@ NumericMatrix compute_rollsd_cpp(NumericVector x, IntegerVector windows) {
         int count = 0;
 
         for (int k = 0; k < w; k++) {
-          if (!NumericVector::is_na(x[i - k])) {
+          if (!is_na(x[i - k])) {
             double val = x[i - k];
             sum += val;
             sum_sq += val * val;
@@ -133,7 +142,7 @@ NumericMatrix compute_rollsd_cpp(NumericVector x, IntegerVector windows) {
         } else {
           double mean = sum / count;
           double variance = (sum_sq - count * mean * mean) / (count - 1);
-          result(i, j) = sqrt(variance);
+          result(i, j) = std::sqrt(variance);
         }
       }
     }
@@ -148,15 +157,16 @@ NumericMatrix compute_rollsd_cpp(NumericVector x, IntegerVector windows) {
 //' @param windows Integer vector of window sizes
 //' @param compute_min Logical, if TRUE compute min, else max
 //' @return Matrix where each column is rolling min or max
-// [[Rcpp::export]]
-NumericMatrix compute_rollminmax_cpp(NumericVector x, IntegerVector windows, bool compute_min = true) {
-  int n = x.size();
-  int n_windows = windows.size();
-  NumericMatrix result(n, n_windows);
+[[cpp11::register]]
+doubles_matrix<> compute_rollminmax_cpp(doubles x, integers windows, bool compute_min) {
+  R_xlen_t n = x.size();
+  R_xlen_t n_windows = windows.size();
 
-  for (int j = 0; j < n_windows; j++) {
+  writable::doubles_matrix<> result(n, n_windows);
+
+  for (R_xlen_t j = 0; j < n_windows; j++) {
     int w = windows[j];
-    for (int i = 0; i < n; i++) {
+    for (R_xlen_t i = 0; i < n; i++) {
       if (i < w - 1) {
         result(i, j) = NA_REAL;
       } else {
@@ -164,12 +174,12 @@ NumericMatrix compute_rollminmax_cpp(NumericVector x, IntegerVector windows, boo
         bool found = false;
 
         for (int k = 0; k < w; k++) {
-          if (!NumericVector::is_na(x[i - k])) {
+          if (!is_na(x[i - k])) {
             found = true;
             if (compute_min) {
-              extreme = std::min(extreme, (double)x[i - k]);
+              extreme = std::min(extreme, x[i - k]);
             } else {
-              extreme = std::max(extreme, (double)x[i - k]);
+              extreme = std::max(extreme, x[i - k]);
             }
           }
         }
@@ -186,37 +196,36 @@ NumericMatrix compute_rollminmax_cpp(NumericVector x, IntegerVector windows, boo
 //' @param x Numeric vector
 //' @param windows Integer vector of window sizes
 //' @return Matrix where each column is rolling slope
-// [[Rcpp::export]]
-NumericMatrix compute_rollslope_cpp(NumericVector x, IntegerVector windows) {
-  int n = x.size();
-  int n_windows = windows.size();
-  NumericMatrix result(n, n_windows);
+[[cpp11::register]]
+doubles_matrix<> compute_rollslope_cpp(doubles x, integers windows) {
+  R_xlen_t n = x.size();
+  R_xlen_t n_windows = windows.size();
 
-  for (int j = 0; j < n_windows; j++) {
+  writable::doubles_matrix<> result(n, n_windows);
+
+  for (R_xlen_t j = 0; j < n_windows; j++) {
     int w = windows[j];
-    for (int i = 0; i < n; i++) {
+    for (R_xlen_t i = 0; i < n; i++) {
       if (i < w - 1) {
         result(i, j) = NA_REAL;
       } else {
-        // Collect valid observations
         std::vector<double> y_vals;
         std::vector<double> x_vals;
 
         for (int k = 0; k < w; k++) {
-          if (!NumericVector::is_na(x[i - k])) {
+          if (!is_na(x[i - k])) {
             y_vals.push_back(x[i - k]);
-            x_vals.push_back(w - k);  // Time index
+            x_vals.push_back(w - k);
           }
         }
 
         if (y_vals.size() < 2) {
           result(i, j) = NA_REAL;
         } else {
-          // Compute linear regression slope: beta = cov(x,y) / var(x)
           double mean_x = 0.0, mean_y = 0.0;
-          int count = y_vals.size();
+          size_t count = y_vals.size();
 
-          for (int k = 0; k < count; k++) {
+          for (size_t k = 0; k < count; k++) {
             mean_x += x_vals[k];
             mean_y += y_vals[k];
           }
@@ -224,7 +233,7 @@ NumericMatrix compute_rollslope_cpp(NumericVector x, IntegerVector windows) {
           mean_y /= count;
 
           double cov = 0.0, var_x = 0.0;
-          for (int k = 0; k < count; k++) {
+          for (size_t k = 0; k < count; k++) {
             double dx = x_vals[k] - mean_x;
             double dy = y_vals[k] - mean_y;
             cov += dx * dy;
@@ -243,93 +252,90 @@ NumericMatrix compute_rollslope_cpp(NumericVector x, IntegerVector windows) {
 //' Create target features for a single time point (used in recursive forecasting)
 //'
 //' @param y_hist Numeric vector of historical target values
-//' @param p Integer, number of lags
-//' @param q Integer vector of MA windows
-//' @param roll_windows Integer vector of rolling stat windows
-//' @param roll_stats Character vector of stats to compute
-//' @param trend_windows Integer vector for rolling slopes
+//' @param p_sexp Integer vector of lag indices (NULL for none)
+//' @param q_sexp Integer vector of MA windows (NULL for none)
+//' @param roll_windows_sexp Integer vector of rolling stat windows (NULL for none)
+//' @param roll_stats_sexp Character vector of stats to compute (NULL for none)
+//' @param trend_windows_sexp Integer vector for rolling slopes (NULL for none)
 //' @return Named list of feature values
-// [[Rcpp::export]]
-List make_target_feats_cpp(NumericVector y_hist,
-                           Nullable<int> p = R_NilValue,
-                           Nullable<IntegerVector> q = R_NilValue,
-                           Nullable<IntegerVector> roll_windows = R_NilValue,
-                           Nullable<CharacterVector> roll_stats = R_NilValue,
-                           Nullable<IntegerVector> trend_windows = R_NilValue) {
-  List result;
-  int n = y_hist.size();
+[[cpp11::register]]
+list make_target_feats_cpp(doubles y_hist,
+                           SEXP p,
+                           SEXP q,
+                           SEXP roll_windows,
+                           SEXP roll_stats,
+                           SEXP trend_windows) {
+  writable::list result;
+  R_xlen_t n = y_hist.size();
 
-  // Lags
-  if (p.isNotNull()) {
-    int n_lags = as<int>(p);
-    for (int lag = 1; lag <= n_lags; lag++) {
-      String name = "lag_" + std::to_string(lag);
+  // Lags - p is now a vector of specific lag indices
+  if (p != R_NilValue) {
+    integers p_vec = as_cpp<integers>(p);
+    for (R_xlen_t i = 0; i < p_vec.size(); i++) {
+      int lag = p_vec[i];
+      std::string name = "lag_" + std::to_string(lag);
       double val = (n >= lag) ? y_hist[n - lag] : NA_REAL;
-      result[name] = val;
+      result.push_back(named_arg(name.c_str()) = val);
     }
   }
 
   // Moving averages
-  if (q.isNotNull()) {
-    IntegerVector windows = as<IntegerVector>(q);
-    for (int i = 0; i < windows.size(); i++) {
-      int w = windows[i];
-      String name = "ma_" + std::to_string(w);
+  if (q != R_NilValue) {
+    integers q_vec = as_cpp<integers>(q);
+    for (R_xlen_t i = 0; i < q_vec.size(); i++) {
+      int w = q_vec[i];
+      std::string name = "ma_" + std::to_string(w);
 
       if (n >= w) {
         double sum = 0.0;
         int count = 0;
         for (int k = 0; k < w; k++) {
-          if (!NumericVector::is_na(y_hist[n - 1 - k])) {
+          if (!is_na(y_hist[n - 1 - k])) {
             sum += y_hist[n - 1 - k];
             count++;
           }
         }
-        result[name] = count > 0 ? sum / count : NA_REAL;
+        result.push_back(named_arg(name.c_str()) = (count > 0 ? sum / count : NA_REAL));
       } else {
-        result[name] = NA_REAL;
+        result.push_back(named_arg(name.c_str()) = NA_REAL);
       }
     }
   }
 
   // Rolling statistics
-  // CRITICAL: Match R training behavior (.complete = TRUE) - return NA for incomplete windows
-  if (roll_windows.isNotNull() && roll_stats.isNotNull()) {
-    IntegerVector windows = as<IntegerVector>(roll_windows);
-    CharacterVector stats = as<CharacterVector>(roll_stats);
+  if (roll_windows != R_NilValue && roll_stats != R_NilValue) {
+    integers roll_windows_vec = as_cpp<integers>(roll_windows);
+    strings roll_stats_vec = as_cpp<strings>(roll_stats);
 
-    for (int i = 0; i < windows.size(); i++) {
-      int w = windows[i];
+    for (R_xlen_t i = 0; i < roll_windows_vec.size(); i++) {
+      int w = roll_windows_vec[i];
 
-      // Return NA for all stats if window is incomplete (matches .complete = TRUE)
       if (n < w) {
-        for (int s = 0; s < stats.size(); s++) {
-          String stat = stats[s];
-          std::string name = std::string("roll") + stat.get_cstring() + "_" + std::to_string(w);
-          result[name] = NA_REAL;
+        for (R_xlen_t s = 0; s < roll_stats_vec.size(); s++) {
+          std::string stat(roll_stats_vec[s]);
+          std::string name = "roll" + stat + "_" + std::to_string(w);
+          result.push_back(named_arg(name.c_str()) = NA_REAL);
         }
         continue;
       }
 
-      // Full window available - collect values
       std::vector<double> vals;
       for (int k = 0; k < w; k++) {
-        if (!NumericVector::is_na(y_hist[n - 1 - k])) {
+        if (!is_na(y_hist[n - 1 - k])) {
           vals.push_back(y_hist[n - 1 - k]);
         }
       }
 
-      // Compute stats (return NA if all values in window are NA)
-      for (int s = 0; s < stats.size(); s++) {
-        String stat = stats[s];
-        std::string name = std::string("roll") + stat.get_cstring() + "_" + std::to_string(w);
+      for (R_xlen_t s = 0; s < roll_stats_vec.size(); s++) {
+        std::string stat(roll_stats_vec[s]);
+        std::string name = "roll" + stat + "_" + std::to_string(w);
 
-        if (vals.size() == 0) {
-          result[name] = NA_REAL;
+        if (vals.empty()) {
+          result.push_back(named_arg(name.c_str()) = NA_REAL);
         } else if (stat == "sum") {
           double sum = 0.0;
           for (double v : vals) sum += v;
-          result[name] = sum;
+          result.push_back(named_arg(name.c_str()) = sum);
         } else if (stat == "sd") {
           if (vals.size() >= 2) {
             double mean = 0.0;
@@ -337,50 +343,48 @@ List make_target_feats_cpp(NumericVector y_hist,
             mean /= vals.size();
             double var = 0.0;
             for (double v : vals) var += (v - mean) * (v - mean);
-            result[name] = sqrt(var / (vals.size() - 1));
+            result.push_back(named_arg(name.c_str()) = std::sqrt(var / (vals.size() - 1)));
           } else {
-            result[name] = NA_REAL;
+            result.push_back(named_arg(name.c_str()) = NA_REAL);
           }
         } else if (stat == "min") {
           double min_val = R_PosInf;
           for (double v : vals) min_val = std::min(min_val, v);
-          result[name] = min_val;
+          result.push_back(named_arg(name.c_str()) = min_val);
         } else if (stat == "max") {
           double max_val = R_NegInf;
           for (double v : vals) max_val = std::max(max_val, v);
-          result[name] = max_val;
+          result.push_back(named_arg(name.c_str()) = max_val);
+        } else {
+          result.push_back(named_arg(name.c_str()) = NA_REAL);
         }
       }
     }
   }
 
   // Trend slopes
-  // CRITICAL: Match R training behavior (.complete = TRUE) - return NA for incomplete windows
-  if (trend_windows.isNotNull()) {
-    IntegerVector windows = as<IntegerVector>(trend_windows);
+  if (trend_windows != R_NilValue) {
+    integers trend_windows_vec = as_cpp<integers>(trend_windows);
 
-    for (int i = 0; i < windows.size(); i++) {
-      int w = windows[i];
-      String name = "rollslope_" + std::to_string(w);
+    for (R_xlen_t i = 0; i < trend_windows_vec.size(); i++) {
+      int w = trend_windows_vec[i];
+      std::string name = "rollslope_" + std::to_string(w);
 
-      // Return NA if window is incomplete (matches .complete = TRUE)
       if (n < w) {
-        result[name] = NA_REAL;
+        result.push_back(named_arg(name.c_str()) = NA_REAL);
         continue;
       }
 
-      // Full window available - collect non-NA values
       std::vector<double> y_vals;
       std::vector<double> x_vals;
 
       for (int k = 0; k < w; k++) {
-        if (!NumericVector::is_na(y_hist[n - w + k])) {
+        if (!is_na(y_hist[n - w + k])) {
           y_vals.push_back(y_hist[n - w + k]);
           x_vals.push_back(k + 1);
         }
       }
 
-      // Need at least 2 points to compute slope
       if (y_vals.size() >= 2) {
         double mean_x = 0.0, mean_y = 0.0;
         for (size_t k = 0; k < y_vals.size(); k++) {
@@ -398,9 +402,9 @@ List make_target_feats_cpp(NumericVector y_hist,
           var_x += dx * dx;
         }
 
-        result[name] = var_x > 0 ? cov / var_x : NA_REAL;
+        result.push_back(named_arg(name.c_str()) = (var_x > 0 ? cov / var_x : NA_REAL));
       } else {
-        result[name] = NA_REAL;
+        result.push_back(named_arg(name.c_str()) = NA_REAL);
       }
     }
   }

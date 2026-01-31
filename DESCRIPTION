@@ -23,9 +23,8 @@ Imports:
     slider (>= 0.2.0),
     generics,
     stats,
-    utils,
-    Rcpp (>= 1.0.0)
-LinkingTo: Rcpp, RcppArmadillo
+    utils
+LinkingTo: cpp11
 Suggests:
     ggplot2,
     randomForest,

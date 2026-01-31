@@ -1,7 +1,6 @@
 #' chronofeat: Time-Based Feature Engineering for Forecasting
 #'
 #' @useDynLib chronofeat, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
 #' @importFrom stats setNames terms coef ts stl
 #' @importFrom utils capture.output head str tail
 #' @importFrom dplyr coalesce anti_join
