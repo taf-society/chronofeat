@@ -226,7 +226,8 @@ fit <- function(formula, data, date = NULL, groups = NULL, model, ...) {
   add_calendar <- any(unlist(spec$cal))
   cal_opts <- if (add_calendar) {
     list(dow = spec$cal$dow, woy = spec$cal$woy, month = spec$cal$month,
-         eom = spec$cal$eom, dom = spec$cal$dom)
+         eom = spec$cal$eom, dom = spec$cal$dom,
+         hod = spec$cal$hod, moh = spec$cal$moh)
   } else list()
 
   # Base: target lags/MAs + calendar + xreg lag/ma (no target rolling yet)

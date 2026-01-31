@@ -105,6 +105,13 @@ cv_forecast <- function(formula,
 
   window_type <- match.arg(window_type)
 
+  # Validate window_size for sliding window
+
+  if (window_type == "sliding" && is.null(window_size)) {
+    stop("'window_size' is required when window_type = 'sliding'. ",
+         "Specify the number of observations to use in each training window.")
+  }
+
   # Prepare data
   DF <- if (inherits(data, "TimeSeries")) data$data else data
   date_col <- if (inherits(data, "TimeSeries")) (if (is.null(date)) data$date else date) else date
@@ -471,7 +478,14 @@ cv_forecast <- function(formula,
       mean(abs(actual - predicted), na.rm = TRUE)
     },
     mape = function(actual, predicted) {
-      mean(abs((actual - predicted) / actual) * 100, na.rm = TRUE)
+      # Guard against division by zero - exclude zero actuals
+      nonzero <- actual != 0 & !is.na(actual)
+      if (sum(nonzero) == 0) return(NA_real_)
+      if (sum(!nonzero & !is.na(actual)) > 0) {
+        warning("MAPE: ", sum(!nonzero & !is.na(actual)),
+                " zero actual value(s) excluded from calculation", call. = FALSE)
+      }
+      mean(abs((actual[nonzero] - predicted[nonzero]) / actual[nonzero]) * 100, na.rm = TRUE)
     },
     mse = function(actual, predicted) {
       mean((actual - predicted)^2, na.rm = TRUE)
@@ -510,7 +524,15 @@ print.cv_forecast <- function(x, ...) {
 #' @param ... Additional arguments (ignored)
 #' @export
 summary.cv_forecast <- function(object, ...) {
-  metric_col <- names(object$metrics)[8]
+  # Find metric column by name from params, or fallback to last column
+
+  metric_name <- if (is.character(object$params$metric)) object$params$metric else "metric"
+  metric_col <- if (metric_name %in% names(object$metrics)) {
+    metric_name
+  } else {
+    # Fallback: use the last column (typically the metric)
+    names(object$metrics)[ncol(object$metrics)]
+  }
   # fold is numeric: 0L = overall, 1L/2L/... = individual folds
   fold_metrics <- object$metrics[object$metrics$fold != 0L, metric_col]
 

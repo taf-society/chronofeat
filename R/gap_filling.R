@@ -1,9 +1,3 @@
-#' Null-coalescing operator
-#' @name grapes-or-or-grapes
-#' @keywords internal
-`%||%` <- function(x, y) if (is.null(x)) y else x
-
-
 #' Fill Missing Target Values with Configurable Strategies
 #'
 #' Apply gap-filling strategies to handle missing target values in time series data.

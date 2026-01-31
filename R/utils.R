@@ -189,9 +189,14 @@ coerce_numeric_col <- function(df, col) {
   result <- df
   is_datetime <- inherits(df[[date_col]], "POSIXct")
 
+
   # Daily calendar features (work with both Date and POSIXct)
-  if (dow)   result <- result %>% mutate(dow = factor(weekdays(.data[[date_col]]),
-                                levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")))
+  # Use strftime("%u") for locale-independent weekday numbers (1=Monday, 7=Sunday)
+  if (dow) {
+    result <- result %>% mutate(
+      dow = factor(strftime(.data[[date_col]], "%u"), levels = sprintf("%d", 1:7))
+    )
+  }
   if (month) result <- result %>% mutate(month = factor(format(.data[[date_col]], "%m"), levels = sprintf("%02d", 1:12)))
   if (dom)   result <- result %>% mutate(dom = as.integer(format(.data[[date_col]], "%d")))
   if (eom)   result <- result %>% mutate(eom = .is_eom(.data[[date_col]]))
@@ -217,9 +222,16 @@ coerce_numeric_col <- function(df, col) {
 
   # Holidays
   if (!is.null(holidays)) {
-    hol <- if (inherits(holidays, "Date")) tibble(h = holidays)
-    else as_tibble(holidays) %>% mutate(h = as.Date(h))
-    names(hol)[1] <- date_col
+    # Handle different input formats: Date vector or data frame
+    if (inherits(holidays, "Date")) {
+      hol <- tibble(!!date_col := holidays)
+    } else {
+      hol <- as_tibble(holidays)
+      # Use first column as the date column, coerce to Date
+      first_col <- names(hol)[1]
+      hol[[first_col]] <- as.Date(hol[[first_col]])
+      names(hol)[1] <- date_col
+    }
     result <- result %>%
       mutate(holiday = 0L) %>%
       left_join(hol %>% mutate(holiday = 1L), by = date_col) %>%
