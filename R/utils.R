@@ -48,7 +48,17 @@ coerce_numeric_col <- function(df, col) {
 .typed_na <- function(x) {
   if (is.factor(x)) return(factor(NA, levels = levels(x)))
   if (inherits(x, "Date")) return(as.Date(NA))
-  if (inherits(x, "POSIXt")) return(as.POSIXct(NA))
+  if (inherits(x, "POSIXlt")) {
+    # Preserve POSIXlt class and timezone
+    na_val <- as.POSIXlt(NA)
+    attr(na_val, "tzone") <- attr(x, "tzone")
+    return(na_val)
+  }
+  if (inherits(x, "POSIXct")) {
+    # Preserve timezone for POSIXct
+    tz <- attr(x, "tzone") %||% ""
+    return(as.POSIXct(NA, tz = tz))
+  }
   if (is.integer(x)) return(NA_integer_)
   if (is.numeric(x)) return(NA_real_)
   if (is.logical(x)) return(NA)
@@ -80,12 +90,10 @@ coerce_numeric_col <- function(df, col) {
                                roll_windows = NULL, roll_stats = c("sum","sd","min","max"),
                                trend_windows = NULL, trend_degrees = NULL) {
   out <- list()
-  # lags - p can be:
-  #   - a vector of specific lag indices (e.g., c(1, 4, 6, 12))
-  #   - a single integer for backward compat (e.g., p=3 means lags 1:3)
+  # lags - p is a vector of specific lag indices (e.g., c(1, 4, 6, 12))
+  # Formula parsing already expands p(k) to 1:k, so no expansion needed here
   if (!is.null(p) && length(p) > 0 && all(p > 0)) {
-    # Backward compatibility: if p is a single integer, expand to 1:p
-    lag_indices <- if (length(p) == 1L) seq_len(p) else p
+    lag_indices <- as.integer(p)
     for (L in lag_indices) {
       nm <- paste0(target_col, "_lag_", L)
       # Align with dplyr::lag(x, n=L) semantics used during training
@@ -196,7 +204,7 @@ coerce_numeric_col <- function(df, col) {
 # @param moh Logical, add minute of hour (0-59) - requires POSIXct
 # @param holidays Date vector or data frame of holiday dates
 # @return Data frame with calendar features added
-#' @importFrom dplyr mutate left_join select ends_with
+#' @importFrom dplyr mutate left_join select any_of
 #' @importFrom tidyr as_tibble
 .add_calendar_feats <- function(df, date_col, dow = FALSE, month = FALSE,
                                  woy = FALSE, eom = FALSE, dom = FALSE,
@@ -247,11 +255,25 @@ coerce_numeric_col <- function(df, col) {
       hol[[first_col]] <- as.Date(hol[[first_col]])
       names(hol)[1] <- date_col
     }
-    result <- result %>%
-      mutate(holiday = 0L) %>%
-      left_join(hol %>% mutate(holiday = 1L), by = date_col) %>%
-      mutate(holiday = coalesce(holiday.y, holiday.x)) %>%
-      select(-any_of(c("holiday.x", "holiday.y")))
+    # For POSIXct series, join on date part only (holidays are typically daily)
+    if (is_datetime) {
+      result <- result %>%
+        mutate(.hol_join_date = as.Date(.data[[date_col]])) %>%
+        mutate(holiday = 0L)
+      hol <- hol %>%
+        rename(.hol_join_date = !!date_col) %>%
+        mutate(holiday = 1L)
+      result <- result %>%
+        left_join(hol, by = ".hol_join_date") %>%
+        mutate(holiday = coalesce(holiday.y, holiday.x)) %>%
+        select(-any_of(c("holiday.x", "holiday.y", ".hol_join_date")))
+    } else {
+      result <- result %>%
+        mutate(holiday = 0L) %>%
+        left_join(hol %>% mutate(holiday = 1L), by = date_col) %>%
+        mutate(holiday = coalesce(holiday.y, holiday.x)) %>%
+        select(-any_of(c("holiday.x", "holiday.y")))
+    }
   }
   result
 }
@@ -281,9 +303,22 @@ list_to_named_list <- function(vec, fn_gen, name_gen) {
       if (!is.null(sc$levels)) {
         result[[v]] <- factor(NA_character_, levels = sc$levels)
       } else if (identical(sc$type, "integer")) {
-        result[[v]] <- as.integer(NA)
+        result[[v]] <- NA_integer_
       } else if (identical(sc$type, "numeric")) {
-        result[[v]] <- as.numeric(NA)
+        result[[v]] <- NA_real_
+      } else if (identical(sc$type, "character")) {
+        result[[v]] <- NA_character_
+      } else if (identical(sc$type, "Date")) {
+        result[[v]] <- as.Date(NA)
+      } else if (identical(sc$type, "POSIXct")) {
+        tz <- sc$tzone %||% ""
+        result[[v]] <- as.POSIXct(NA, tz = tz)
+      } else if (identical(sc$type, "POSIXlt")) {
+        na_val <- as.POSIXlt(NA)
+        attr(na_val, "tzone") <- sc$tzone %||% ""
+        result[[v]] <- na_val
+      } else if (identical(sc$type, "logical")) {
+        result[[v]] <- NA
       } else {
         result[[v]] <- NA
       }
@@ -307,6 +342,18 @@ list_to_named_list <- function(vec, fn_gen, name_gen) {
       result[[v]] <- as.integer(result[[v]])
     } else if (identical(sc$type, "numeric")) {
       result[[v]] <- as.numeric(result[[v]])
+    } else if (identical(sc$type, "logical")) {
+      result[[v]] <- as.logical(result[[v]])
+    } else if (identical(sc$type, "character")) {
+      result[[v]] <- as.character(result[[v]])
+    } else if (identical(sc$type, "Date")) {
+      result[[v]] <- as.Date(result[[v]])
+    } else if (identical(sc$type, "POSIXct")) {
+      tz <- sc$tzone %||% ""
+      result[[v]] <- as.POSIXct(result[[v]], tz = tz)
+    } else if (identical(sc$type, "POSIXlt")) {
+      tz <- sc$tzone %||% ""
+      result[[v]] <- as.POSIXlt(result[[v]], tz = tz)
     }
   }
   result
@@ -388,10 +435,12 @@ list_to_named_list <- function(vec, fn_gen, name_gen) {
 
     } else if (is.numeric(frequency)) {
       # For numeric frequency: add multiples of the frequency to last_date
-      # Numeric frequency is in days for Date objects, or days for POSIXct (convert to seconds)
+      # Numeric frequency is in days for Date objects
       if (is_datetime) {
-        # Convert days to seconds for POSIXct arithmetic
-        return(last_date + seq_len(h) * frequency * 86400)
+        # Use seq.POSIXt with "days" to handle DST correctly
+        # frequency is in days, so generate sequence with that step
+        future_dates <- seq(last_date, by = paste(frequency, "days"), length.out = h + 1)
+        return(future_dates[-1])
       } else {
         return(last_date + seq_len(h) * frequency)
       }
@@ -493,8 +542,8 @@ list_to_named_list <- function(vec, fn_gen, name_gen) {
   for (t in terms_chr) {
     # Target lags: p(k), p(1:k), p(c(1, 4, 6, 12))
     # Supports three forms:
-    #   p(12)           - single lag only (lag_12)
-    #   p(1:12)         - range of lags (lag_1 through lag_12)
+    #   p(12)             - k lags (lag_1 through lag_12)
+    #   p(1:12)           - range of lags (lag_1 through lag_12)
     #   p(c(1, 4, 6, 12)) - explicit set of lags
     if (grepl("^p\\(", t)) {
       inner <- sub("^p\\((.*)\\)$", "\\1", t)
@@ -502,8 +551,8 @@ list_to_named_list <- function(vec, fn_gen, name_gen) {
 
       # Safe parsing without eval() - only allow numeric patterns
       lags <- if (grepl("^-?\\d+$", inner)) {
-        # Single integer: p(12)
-        as.integer(inner)
+        # Single integer: p(12) means 12 lags (1:12), matching documentation
+        seq_len(as.integer(inner))
       } else if (grepl("^-?\\d+:-?\\d+$", inner)) {
         # Range: p(1:12)
         parts <- as.integer(strsplit(inner, ":")[[1]])
@@ -520,7 +569,7 @@ list_to_named_list <- function(vec, fn_gen, name_gen) {
         as.integer(trimws(parts))
       } else {
         stop("p(...): unrecognized lag specification '", inner, "'. ",
-             "Use p(k) for single lag, p(1:k) for range, or p(c(1,4,6)) for explicit set.")
+             "Use p(k) for k lags (1:k), p(a:b) for range, or p(c(1,4,6)) for explicit set.")
       }
 
       # Validate

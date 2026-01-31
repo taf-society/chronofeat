@@ -335,8 +335,10 @@ fit <- function(formula, data, date = NULL, groups = NULL, model, ...) {
 
   # Keep predictor schema for forecasting
   predictor_schema <- lapply(predictor_names, function(v) {
-    lv <- if (is.factor(train_data[[v]])) levels(train_data[[v]]) else NULL
-    list(name = v, type = class(train_data[[v]])[1], levels = lv)
+    col <- train_data[[v]]
+    lv <- if (is.factor(col)) levels(col) else NULL
+    tz <- if (inherits(col, "POSIXt")) (attr(col, "tzone") %||% "") else NULL
+    list(name = v, type = class(col)[1], levels = lv, tzone = tz)
   })
 
   structure(list(

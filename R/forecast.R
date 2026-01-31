@@ -27,6 +27,12 @@
       row_data <- steps[i, ]
       start_date <- row_data$start
 
+      # Check for all-NA dates in this group
+      if (length(start_date) == 0 || is.na(start_date)) {
+        grp_desc <- paste(vapply(groups_chr, function(g) paste0(g, "=", row_data[[g]]), character(1)), collapse = ", ")
+        stop("Cannot generate future dates: group (", grp_desc, ") has no valid (non-NA) dates.", call. = FALSE)
+      }
+
       # Filter historical data for this group
       grp_filter <- rep(TRUE, nrow(history))
       for (g in groups_chr) {

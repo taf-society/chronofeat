@@ -617,6 +617,12 @@ print.TimeSeries <- function(x, ...) {
     stop("Cannot detect frequency: insufficient data.")
   }
 
+  # Check for duplicate timestamps (median_diff = 0)
+  if (median_diff == 0) {
+    stop("Cannot detect frequency: duplicate timestamps detected. ",
+         "Remove duplicate timestamps or specify frequency explicitly.")
+  }
+
   # Route to appropriate detection based on datetime type
 
   if (is_datetime) {

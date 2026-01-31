@@ -21,7 +21,7 @@ feat_calendar_dt(
 
 \item{date}{Symbol or character naming the date column (Date or POSIXct class)}
 
-\item{dow}{Logical, add day of week as ordered factor (Monday-Sunday)}
+\item{dow}{Logical, add day of week as ordered factor (1=Monday, 7=Sunday)}
 
 \item{woy}{Logical, add week of year (1-53)}
 

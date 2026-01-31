@@ -244,9 +244,12 @@ cv_forecast <- function(formula,
     }
 
     # Use first forecast column if multiple (e.g., intervals returned)
-    # Prefer column matching target name, otherwise use first
+    # Prefer column matching target name or {target}_forecast pattern
+    target_forecast_col <- paste0(target_col, "_forecast")
     fc_col <- if (target_col %in% fc_cols) {
       target_col
+    } else if (target_forecast_col %in% fc_cols) {
+      target_forecast_col
     } else {
       fc_cols[1]
     }
@@ -312,7 +315,7 @@ cv_forecast <- function(formula,
 
   if (sum(valid) == 0) {
     overall_metric <- NA_real_
-  } else if (is.character(metric) && metric == "rmse") {
+  } else if (is.character(metric) && tolower(metric) == "rmse") {
     # RMSE: aggregate as sqrt of weighted mean of squared values
     overall_metric <- sqrt(stats::weighted.mean(fold_metrics[valid]^2, fold_weights[valid]))
   } else {
