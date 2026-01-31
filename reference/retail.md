@@ -1,0 +1,49 @@
+# Retail Sales Dataset
+
+A sample retail sales time series dataset with monthly observations for
+multiple product categories. Useful for demonstrating and testing the
+chronofeat package functions.
+
+## Usage
+
+``` r
+retail
+```
+
+## Format
+
+A tibble with 13,986 rows and 3 columns:
+
+- date:
+
+  Date of the observation (monthly, Date class)
+
+- items:
+
+  Product category identifier (factor with 42 levels)
+
+- value:
+
+  Sales value (numeric)
+
+## Source
+
+Synthetic retail sales data for package examples and testing.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Load the data
+data(retail)
+
+# Create a TimeSeries object
+ts <- TimeSeries(retail, date = "date", groups = "items", frequency = "month")
+
+# Fit a model
+m <- fit(value ~ p(12) + month(), data = ts, model = lm)
+
+# Generate forecasts
+fc <- forecast(m, h = 12)
+} # }
+```

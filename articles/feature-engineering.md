@@ -1,0 +1,490 @@
+# Feature Engineering Reference
+
+## Overview
+
+This article provides a complete reference for all features available in
+chronofeat’s formula interface. Features are automatically generated
+during
+[`fit()`](https://taf-society.github.io/chronofeat/reference/fit.md) and
+regenerated identically during
+[`forecast()`](https://generics.r-lib.org/reference/forecast.html).
+
+``` r
+library(chronofeat)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+
+data(retail)
+ts_data <- TimeSeries(retail, date = "date", groups = "items", frequency = "month")
+```
+
+------------------------------------------------------------------------
+
+## Target Features
+
+Target features are derived from the variable you’re forecasting.
+
+### Lags: `p()`
+
+Create lagged values of the target variable.
+
+``` r
+# Create 12 consecutive lags (lag_1 through lag_12)
+m <- fit(value ~ p(12), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_lag_12"
+```
+
+``` r
+# Create specific lags only
+m <- fit(value ~ p(1, 7, 12, 24), data = ts_data, model = lm)
+# Creates: value_lag_1, value_lag_7, value_lag_12, value_lag_24
+```
+
+**How it works during forecasting:**
+
+- At step 1: `value_lag_1` uses the last actual observation
+- At step 2: `value_lag_1` uses the step-1 prediction
+- And so on recursively
+
+**Best practices:**
+
+- For daily data with weekly seasonality: `p(1, 7, 14)` or `p(7)`
+- For monthly data with yearly seasonality: `p(1, 12)` or `p(12)`
+- Fewer lags = less data lost to NA, simpler model
+- More lags = captures longer patterns but needs more history
+
+### Moving Averages: `q()`
+
+Create moving averages of the target over specified windows.
+
+``` r
+# Single window
+m <- fit(value ~ q(12), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_ma_12"
+
+# Multiple windows
+m <- fit(value ~ q(3, 6, 12), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_ma_3"  "value_ma_6"  "value_ma_12"
+```
+
+**How it works:**
+
+- `q(7)` = mean of the last 7 values (including current)
+- Uses
+  [`slider::slide_dbl()`](https://slider.r-lib.org/reference/slide.html)
+  with `.complete = TRUE` (returns NA if window incomplete)
+
+**Best practices:**
+
+- Captures level/trend without lag-specific patterns
+- Combine with lags: `value ~ p(12) + q(12)` provides both
+- During forecasting, early steps may have incomplete windows (returns
+  NA)
+
+### Rolling Statistics
+
+Calculate rolling statistics over specified windows.
+
+#### Rolling Sum: `rollsum()`
+
+``` r
+m <- fit(value ~ rollsum(6, 12), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_rollsum_6"  "value_rollsum_12"
+```
+
+Useful for cumulative metrics (total sales over period).
+
+#### Rolling Standard Deviation: `rollsd()`
+
+``` r
+m <- fit(value ~ rollsd(12), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_rollsd_12"
+```
+
+Captures volatility/variability patterns.
+
+#### Rolling Min/Max: `rollmin()`, `rollmax()`
+
+``` r
+m <- fit(value ~ rollmin(12) + rollmax(12), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_rollmin_12" "value_rollmax_12"
+```
+
+Useful for range-based patterns.
+
+#### Rolling Slope: `rollslope()`
+
+``` r
+m <- fit(value ~ rollslope(12), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_rollslope_12"
+```
+
+Captures local trend direction and strength. Computed as the slope of a
+linear regression over the window.
+
+**Important behavior during forecasting:**
+
+Rolling statistics return NA when the available history is shorter than
+the requested window. This matches training behavior where incomplete
+windows produce NA.
+
+### Trend: `trend()`
+
+Add polynomial trend features (time index raised to powers).
+
+``` r
+# Linear trend
+m <- fit(value ~ p(12) + trend(1), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_lag_12" "trend1"
+
+# Quadratic trend
+m <- fit(value ~ p(12) + trend(1, 2), data = ts_data, model = lm)
+m$predictors
+#> [1] "value_lag_12" "trend1"       "trend2"
+```
+
+**How it works:**
+
+- `trend(1)` = row number (1, 2, 3, …)
+- `trend(2)` = row number squared
+- During forecasting, continues incrementing (if trained on 100 rows,
+  forecast step 1 = 101)
+
+**Caution:**
+
+High-degree polynomials can extrapolate wildly. Prefer `trend(1)` or use
+with regularization.
+
+------------------------------------------------------------------------
+
+## Calendar Features
+
+Calendar features capture seasonal patterns based on the date.
+
+### Day of Week: `dow()`
+
+``` r
+# dow() returns an ordered factor: Monday, Tuesday, ..., Sunday
+m <- fit(value ~ p(7) + dow(), data = ts_data, model = lm)
+```
+
+For daily data, captures within-week patterns (e.g., weekend effects).
+
+### Month: `month()`
+
+``` r
+# month() returns a factor: 01, 02, ..., 12
+m <- fit(value ~ p(12) + month(), data = ts_data, model = lm)
+```
+
+Captures monthly seasonality (very common in retail, energy, etc.).
+
+### Week of Year: `woy()`
+
+``` r
+# woy() returns integer: 1-53
+m <- fit(value ~ p(7) + woy(), data = ts_data, model = lm)
+```
+
+Captures week-level seasonality. Useful for weekly data or daily data
+where week number matters.
+
+### End of Month: `eom()`
+
+``` r
+# eom() returns 0/1 indicator
+m <- fit(value ~ p(12) + eom(), data = ts_data, model = lm)
+```
+
+Captures end-of-month effects (common in finance, billing cycles).
+
+### Day of Month: `dom()`
+
+``` r
+# dom() returns integer: 1-31
+m <- fit(value ~ p(12) + dom(), data = ts_data, model = lm)
+```
+
+Captures within-month patterns (e.g., payday effects).
+
+### Combining Calendar Features
+
+``` r
+# For daily retail data
+value ~ p(7) + dow() + month() + eom()
+
+# For hourly data (if using POSIXct)
+value ~ p(24) + dow() + month() + hod()  # hour of day
+```
+
+**Important:**
+
+Calendar features create factor levels. Ensure your training data covers
+all levels you’ll encounter during forecasting. If you train on Jan-Nov
+and forecast into December, the `month = 12` level will be unknown and
+converted to NA.
+
+------------------------------------------------------------------------
+
+## Exogenous Variable Features
+
+Include external predictors in your model.
+
+### Raw Variables
+
+Include a column directly (no transformation):
+
+``` r
+# Assume data has 'price' and 'promo' columns
+m <- fit(value ~ p(12) + price + promo, data = ts_data, model = lm)
+```
+
+For forecasting, you must provide future values via the `future`
+parameter:
+
+``` r
+future_data <- data.frame(
+  date = seq(as.Date("2024-01-01"), by = "month", length.out = 12),
+  items = "item_1",
+  price = rep(9.99, 12),
+  promo = c(1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1)
+)
+
+fc <- forecast(m, future = future_data)
+```
+
+### Lagged Exogenous: `lag()`
+
+Create lags of exogenous variables:
+
+``` r
+# lag(variable, lag1, lag2, ...)
+m <- fit(value ~ p(12) + lag(price, 0, 1, 7), data = ts_data, model = lm)
+# Creates: price (lag 0 = current), price_lag_1, price_lag_7
+```
+
+**Lag 0** includes the current value of the exogenous variable.
+
+### Moving Average of Exogenous: `ma()`
+
+``` r
+# ma(variable, window1, window2, ...)
+m <- fit(value ~ p(12) + ma(price, 7, 28), data = ts_data, model = lm)
+# Creates: price_ma_7, price_ma_28
+```
+
+### Combining Exogenous Features
+
+``` r
+# Full exogenous specification
+m <- fit(
+  value ~ p(12) + month() +
+    price + lag(price, 1, 7) + ma(price, 7) +
+    promo,
+  data = ts_data,
+  model = lm
+)
+```
+
+------------------------------------------------------------------------
+
+## Feature Combinations
+
+Here are recommended feature sets for common scenarios:
+
+### Basic Autoregressive
+
+``` r
+# Simple: just lags
+value ~ p(12)
+
+# With moving average
+value ~ p(12) + q(12)
+```
+
+### Seasonal (Calendar-based)
+
+``` r
+# Monthly data with yearly seasonality
+value ~ p(12) + month()
+
+# Daily data with weekly + yearly
+value ~ p(7) + dow() + month()
+
+# Daily with all calendar
+value ~ p(7) + dow() + month() + woy() + eom()
+```
+
+### Trend + Seasonality
+
+``` r
+# Linear trend + monthly seasonality
+value ~ p(12) + trend(1) + month()
+
+# Quadratic trend (use cautiously)
+value ~ p(12) + trend(1, 2) + month()
+```
+
+### With Rolling Statistics
+
+``` r
+# Capture level, volatility, and trend
+value ~ p(12) + q(12) + rollsd(12) + rollslope(12)
+
+# Multiple windows for short and long patterns
+value ~ p(12) + rollsum(7, 28) + rollsd(7, 28)
+```
+
+### With Exogenous Variables
+
+``` r
+# Price effects
+value ~ p(12) + month() + price + lag(price, 1, 7)
+
+# Full model
+value ~ p(12) + q(12) + month() + dow() +
+        price + lag(price, 1, 7) + ma(price, 7) +
+        promo + rollslope(12)
+```
+
+------------------------------------------------------------------------
+
+## Choosing Features
+
+### Guidelines by Data Frequency
+
+| Frequency | Typical Features                       |
+|-----------|----------------------------------------|
+| Hourly    | `p(24, 168)` + `dow()` + hour features |
+| Daily     | `p(7, 14)` + `dow()` + `month()`       |
+| Weekly    | `p(4, 52)` + `woy()` + `month()`       |
+| Monthly   | `p(12, 24)` + `month()`                |
+| Quarterly | `p(4, 8)` + quarter feature            |
+
+### Guidelines by Pattern Type
+
+| Pattern               | Recommended Features                                   |
+|-----------------------|--------------------------------------------------------|
+| Strong trend          | `trend(1)` or differencing                             |
+| Weekly seasonality    | `dow()` or `p(7)`                                      |
+| Yearly seasonality    | `month()` or `p(12)` for monthly data                  |
+| Volatility clustering | `rollsd()`                                             |
+| Level shifts          | `rollsum()`, [`q()`](https://rdrr.io/r/base/quit.html) |
+| Local trends          | `rollslope()`                                          |
+
+### Start Simple
+
+1.  Start with `p(k) + month()` where k matches your seasonality
+2.  Check residuals for remaining patterns
+3.  Add features incrementally
+4.  Use cross-validation to compare
+
+------------------------------------------------------------------------
+
+## Feature Behavior During Forecasting
+
+Understanding how features behave during recursive forecasting is
+crucial:
+
+### Complete Windows vs Incomplete
+
+| Feature       | Training              | Forecasting (early steps)   |
+|---------------|-----------------------|-----------------------------|
+| Lags          | Use actual history    | Use predictions recursively |
+| MAs           | Complete windows only | NA if window incomplete     |
+| Rolling stats | Complete windows only | NA if window incomplete     |
+| Calendar      | From training dates   | From generated future dates |
+| Trend         | 1, 2, …, n            | n+1, n+2, …, n+h            |
+
+### NA Handling
+
+- Rows with NA features are dropped during training
+- During forecasting, NA features → NA predictions for that step
+- Choose window sizes appropriate for your forecast horizon
+
+------------------------------------------------------------------------
+
+## Low-Level Feature Functions
+
+For manual feature engineering outside the formula interface:
+
+``` r
+# Create lags and MAs manually
+df_feat <- feat_lag_ma_dt(
+  df = my_data,
+  date = "date",
+  target = "sales",
+  groups = "store",
+  p = 12,          # 12 lags
+  q = c(7, 28)     # 7-day and 28-day MAs
+)
+
+# Add calendar features
+df_feat <- feat_calendar_dt(
+  df = df_feat,
+  date = date,
+  dow = TRUE,
+  month = TRUE,
+  woy = FALSE,
+  eom = TRUE,
+  dom = FALSE
+)
+
+# Add rolling statistics
+df_feat <- feat_rolling_dt(
+  df = df_feat,
+  date = "date",
+  target = "sales",
+  groups = "store",
+  windows = c(7, 28),
+  stats = c("sum", "sd"),
+  trend_windows = 28
+)
+
+# Add trend
+df_feat <- feat_trend(
+  df = df_feat,
+  date = "date",
+  groups = "store",
+  degrees = c(1, 2)
+)
+```
+
+------------------------------------------------------------------------
+
+## Summary Table
+
+| Feature        | Syntax          | Output Columns                                        |
+|----------------|-----------------|-------------------------------------------------------|
+| Lags           | `p(k)`          | `{target}_lag_1` … `{target}_lag_k`                   |
+| Specific lags  | `p(1, 7, 12)`   | `{target}_lag_1`, `{target}_lag_7`, `{target}_lag_12` |
+| Moving average | `q(w1, w2)`     | `{target}_ma_w1`, `{target}_ma_w2`                    |
+| Rolling sum    | `rollsum(w)`    | `{target}_rollsum_w`                                  |
+| Rolling SD     | `rollsd(w)`     | `{target}_rollsd_w`                                   |
+| Rolling min    | `rollmin(w)`    | `{target}_rollmin_w`                                  |
+| Rolling max    | `rollmax(w)`    | `{target}_rollmax_w`                                  |
+| Rolling slope  | `rollslope(w)`  | `{target}_rollslope_w`                                |
+| Trend          | `trend(d1, d2)` | `trend1`, `trend2`                                    |
+| Day of week    | `dow()`         | `dow` (factor)                                        |
+| Month          | `month()`       | `month` (factor)                                      |
+| Week of year   | `woy()`         | `woy` (integer)                                       |
+| End of month   | `eom()`         | `eom` (0/1)                                           |
+| Day of month   | `dom()`         | `dom` (integer)                                       |
+| Exog lag       | `lag(var, k)`   | `var_lag_k`                                           |
+| Exog MA        | `ma(var, w)`    | `var_ma_w`                                            |
+| Raw column     | `varname`       | `varname`                                             |
