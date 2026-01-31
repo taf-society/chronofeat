@@ -109,9 +109,10 @@ authors:
 
 footer:
   structure:
-    left: developed_by
+    left: tafs
     right: built_with
-
+  components:
+    tafs: "Developed by [Time Series Analysis and Forecasting Society](https://taf-society.org/)"
 articles:
 - title: Getting Started
   navbar: ~
