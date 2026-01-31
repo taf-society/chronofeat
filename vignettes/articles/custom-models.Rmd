@@ -1,0 +1,780 @@
+---
+title: "Building Custom Models"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Building Custom Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Overview
+
+chronofeat is **model-agnostic**: it handles feature engineering and recursive forecasting, while you provide the model. This article shows how to integrate any machine learning framework with chronofeat, from simple linear models to gradient boosting and neural networks.
+
+```{r setup}
+library(chronofeat)
+library(dplyr)
+
+# Load sample data
+data(retail)
+ts_data <- TimeSeries(retail, date = "date", groups = "items", frequency = "month")
+```
+
+## The Model Specification Interface
+
+chronofeat accepts models in two forms:
+
+### 1. Direct Function (Simple Cases)
+
+For models with standard R interfaces, pass the function directly:
+```{r direct_function, eval=FALSE}
+# Works with lm, glm, randomForest, ranger, etc.
+m <- fit(value ~ p(12) + month(), data = ts_data, model = lm)
+```
+
+chronofeat internally converts this to a model specification using `as_model_spec()`.
+
+### 2. Model Specification (Full Control)
+
+For complete control, provide a list with `fit` and `predict` functions:
+```{r model_spec_interface, eval=FALSE}
+model_spec <- list(
+  fit = function(y, X, ...) {
+    # y: numeric vector of target values
+    # X: data frame of predictor columns
+    # ...: additional arguments from fit()
+    # Return: fitted model object
+  },
+  predict = function(object, newdata, ...) {
+    # object: fitted model from fit()
+    # newdata: data frame with same columns as X
+    # Return: numeric vector of predictions
+  }
+)
+
+m <- fit(value ~ p(12), data = ts_data, model = model_spec)
+```
+
+**Key points:**
+
+- `X` is a **data frame**, not a matrix. Factor columns remain as factors.
+- `y` is a numeric vector (the target column)
+- Your `predict` function must return a numeric vector
+
+---
+
+## Example 1: Linear Models (lm, glm)
+
+### Basic Linear Regression
+
+The simplest approach - pass `lm` directly:
+
+```{r lm_simple}
+m_lm <- fit(
+  value ~ p(12) + month(),
+  data = ts_data,
+  model = lm
+)
+
+fc <- forecast(m_lm, h = 6)
+head(fc)
+```
+
+### GLM for Count Data
+
+For count data, use a Poisson or Negative Binomial GLM:
+
+```{r glm, eval=FALSE}
+# Poisson GLM
+m_poisson <- fit(
+ count ~ p(7) + dow() + month(),
+  data = count_data,
+  date = "date",
+  groups = "store",
+  model = glm,
+  family = poisson()
+)
+
+# Negative Binomial (requires MASS)
+library(MASS)
+m_nb <- fit(
+  count ~ p(7) + dow(),
+  data = count_data,
+  date = "date",
+  model = glm.nb
+)
+```
+
+### Regularized Regression (glmnet)
+
+```{r glmnet, eval=FALSE}
+library(glmnet)
+
+glmnet_spec <- list(
+  fit = function(y, X, alpha = 1, lambda = NULL, ...) {
+    # glmnet requires matrix input
+    # Handle factors by creating model matrix
+    X_mat <- model.matrix(~ . - 1, data = X)
+
+    if (is.null(lambda)) {
+      # Use cross-validation to select lambda
+      cv_fit <- cv.glmnet(X_mat, y, alpha = alpha, ...)
+      lambda <- cv_fit$lambda.min
+    }
+
+    list(
+      model = glmnet(X_mat, y, alpha = alpha, lambda = lambda, ...),
+      lambda = lambda,
+      formula = ~ . - 1  # Store for prediction
+    )
+  },
+  predict = function(object, newdata, ...) {
+    X_mat <- model.matrix(object$formula, data = newdata)
+    as.numeric(predict(object$model, newx = X_mat, s = object$lambda))
+  }
+)
+
+# Lasso (alpha = 1)
+m_lasso <- fit(value ~ p(12) + month(), data = ts_data, model = glmnet_spec, alpha = 1)
+
+# Ridge (alpha = 0)
+m_ridge <- fit(value ~ p(12) + month(), data = ts_data, model = glmnet_spec, alpha = 0)
+
+# Elastic Net (alpha = 0.5)
+m_enet <- fit(value ~ p(12) + month(), data = ts_data, model = glmnet_spec, alpha = 0.5)
+```
+
+---
+
+## Example 2: XGBoost
+
+XGBoost is one of the most popular choices for time series forecasting.
+
+```{r xgboost, eval=FALSE}
+library(xgboost)
+
+xgb_spec <- list(
+  fit = function(y, X, nrounds = 100, ...) {
+    # Convert factors to numeric for XGBoost
+    X_processed <- X
+    factor_cols <- sapply(X, is.factor)
+
+    if (any(factor_cols)) {
+      for (col in names(X)[factor_cols]) {
+        X_processed[[col]] <- as.numeric(X[[col]])
+      }
+    }
+
+    # Create DMatrix
+    dtrain <- xgb.DMatrix(data = as.matrix(X_processed), label = y)
+
+    # Train model
+    xgboost(
+      data = dtrain,
+      nrounds = nrounds,
+      verbose = 0,
+      ...
+    )
+  },
+  predict = function(object, newdata, ...) {
+    # Same factor conversion
+    X_processed <- newdata
+    factor_cols <- sapply(newdata, is.factor)
+
+    if (any(factor_cols)) {
+      for (col in names(newdata)[factor_cols]) {
+        X_processed[[col]] <- as.numeric(newdata[[col]])
+      }
+    }
+
+    predict(object, as.matrix(X_processed))
+  }
+)
+
+m_xgb <- fit(
+  value ~ p(12) + q(7, 12) + month() + rollsum(12),
+  data = ts_data,
+  model = xgb_spec,
+  nrounds = 200,
+  eta = 0.1,
+  max_depth = 6
+)
+
+fc_xgb <- forecast(m_xgb, h = 12)
+```
+
+### XGBoost with Early Stopping
+
+```{r xgb_early_stop, eval=FALSE}
+xgb_early_spec <- list(
+  fit = function(y, X, nrounds = 1000, early_stopping_rounds = 50, ...) {
+    # Convert factors
+    X_processed <- X
+    factor_cols <- sapply(X, is.factor)
+    if (any(factor_cols)) {
+      for (col in names(X)[factor_cols]) {
+        X_processed[[col]] <- as.numeric(X[[col]])
+      }
+    }
+
+    # Split for validation (last 20%)
+    n <- length(y)
+    val_idx <- seq(floor(n * 0.8) + 1, n)
+    train_idx <- seq(1, floor(n * 0.8))
+
+    dtrain <- xgb.DMatrix(
+      data = as.matrix(X_processed[train_idx, , drop = FALSE]),
+      label = y[train_idx]
+    )
+    dval <- xgb.DMatrix(
+      data = as.matrix(X_processed[val_idx, , drop = FALSE]),
+      label = y[val_idx]
+    )
+
+    xgb.train(
+      data = dtrain,
+      watchlist = list(train = dtrain, val = dval),
+      nrounds = nrounds,
+      early_stopping_rounds = early_stopping_rounds,
+      verbose = 0,
+      ...
+    )
+  },
+  predict = function(object, newdata, ...) {
+    X_processed <- newdata
+    factor_cols <- sapply(newdata, is.factor)
+    if (any(factor_cols)) {
+      for (col in names(newdata)[factor_cols]) {
+        X_processed[[col]] <- as.numeric(newdata[[col]])
+      }
+    }
+    predict(object, as.matrix(X_processed))
+  }
+)
+```
+
+---
+
+## Example 3: LightGBM
+
+LightGBM handles categorical features natively, making it convenient for time series with calendar features.
+
+```{r lightgbm, eval=FALSE}
+library(lightgbm)
+
+lgb_spec <- list(
+  fit = function(y, X, num_iterations = 100, ...) {
+    # Identify categorical columns
+    cat_cols <- names(X)[sapply(X, is.factor)]
+
+    # Convert factors to integer (0-indexed for LightGBM)
+    X_processed <- X
+    for (col in cat_cols) {
+      X_processed[[col]] <- as.integer(X[[col]]) - 1L
+    }
+
+    # Create dataset with categorical feature specification
+    dtrain <- lgb.Dataset(
+      data = as.matrix(X_processed),
+      label = y,
+      categorical_feature = cat_cols
+    )
+
+    lgb.train(
+      data = dtrain,
+      params = list(
+        objective = "regression",
+        metric = "rmse",
+        verbosity = -1,
+        ...
+      ),
+      nrounds = num_iterations
+    )
+  },
+  predict = function(object, newdata, ...) {
+    # Same factor conversion
+    X_processed <- newdata
+    cat_cols <- names(newdata)[sapply(newdata, is.factor)]
+    for (col in cat_cols) {
+      X_processed[[col]] <- as.integer(newdata[[col]]) - 1L
+    }
+
+    predict(object, as.matrix(X_processed))
+  }
+)
+
+m_lgb <- fit(
+  value ~ p(12) + month() + rollsum(12),
+  data = ts_data,
+  model = lgb_spec,
+  num_iterations = 200,
+  learning_rate = 0.1,
+  num_leaves = 31
+)
+```
+
+---
+
+## Example 4: Random Forest
+
+### Using randomForest
+
+```{r rf, eval=FALSE}
+library(randomForest)
+
+# Direct usage (works out of the box)
+m_rf <- fit(
+  value ~ p(12) + month(),
+  data = ts_data,
+  model = randomForest,
+  ntree = 500
+)
+
+fc_rf <- forecast(m_rf, h = 12)
+```
+
+### Using ranger (Faster)
+
+ranger is a faster implementation of Random Forest:
+
+```{r ranger, eval=FALSE}
+library(ranger)
+
+ranger_spec <- list(
+  fit = function(y, X, ...) {
+    # ranger uses formula interface
+    train_df <- cbind(data.frame(.target = y), X)
+    ranger(.target ~ ., data = train_df, ...)
+  },
+  predict = function(object, newdata, ...) {
+    predict(object, data = newdata)$predictions
+  }
+)
+
+m_ranger <- fit(
+  value ~ p(12) + month(),
+  data = ts_data,
+  model = ranger_spec,
+  num.trees = 500,
+  mtry = 4
+)
+```
+
+---
+
+## Example 5: Support Vector Machines
+
+```{r svm, eval=FALSE}
+library(e1071)
+
+svm_spec <- list(
+  fit = function(y, X, ...) {
+    train_df <- cbind(data.frame(.target = y), X)
+    svm(.target ~ ., data = train_df, ...)
+  },
+  predict = function(object, newdata, ...) {
+    as.numeric(predict(object, newdata = newdata))
+  }
+)
+
+m_svm <- fit(
+  value ~ p(12) + month(),
+  data = ts_data,
+  model = svm_spec,
+  kernel = "radial",
+  cost = 1,
+  epsilon = 0.1
+)
+```
+
+---
+
+## Example 6: Neural Networks (Keras/TensorFlow)
+
+```{r keras, eval=FALSE}
+library(keras)
+
+keras_spec <- list(
+  fit = function(y, X, epochs = 100, batch_size = 32, ...) {
+    # Convert all to numeric matrix
+    X_mat <- model.matrix(~ . - 1, data = X)
+
+    # Scale features
+    X_mean <- colMeans(X_mat)
+    X_sd <- apply(X_mat, 2, sd)
+    X_sd[X_sd == 0] <- 1  # Avoid division by zero
+    X_scaled <- scale(X_mat, center = X_mean, scale = X_sd)
+
+    # Scale target
+    y_mean <- mean(y)
+    y_sd <- sd(y)
+    y_scaled <- (y - y_mean) / y_sd
+
+    # Build model
+    model <- keras_model_sequential() %>%
+      layer_dense(units = 64, activation = "relu", input_shape = ncol(X_scaled)) %>%
+      layer_dropout(rate = 0.2) %>%
+      layer_dense(units = 32, activation = "relu") %>%
+      layer_dropout(rate = 0.2) %>%
+      layer_dense(units = 1)
+
+    model %>% compile(
+      loss = "mse",
+      optimizer = optimizer_adam(learning_rate = 0.001)
+    )
+
+    # Train
+    model %>% keras::fit(
+      X_scaled, y_scaled,
+      epochs = epochs,
+      batch_size = batch_size,
+      validation_split = 0.2,
+      verbose = 0,
+      callbacks = list(
+        callback_early_stopping(patience = 10, restore_best_weights = TRUE)
+      )
+    )
+
+    # Return model with scaling parameters
+    list(
+      model = model,
+      X_mean = X_mean,
+      X_sd = X_sd,
+      y_mean = y_mean,
+      y_sd = y_sd,
+      formula = ~ . - 1
+    )
+  },
+  predict = function(object, newdata, ...) {
+    X_mat <- model.matrix(object$formula, data = newdata)
+    X_scaled <- scale(X_mat, center = object$X_mean, scale = object$X_sd)
+
+    y_scaled <- predict(object$model, X_scaled)
+    as.numeric(y_scaled * object$y_sd + object$y_mean)
+  }
+)
+
+m_keras <- fit(
+  value ~ p(12) + month(),
+  data = ts_data,
+  model = keras_spec,
+  epochs = 100,
+  batch_size = 64
+)
+```
+
+---
+
+## Example 7: Ensemble Models
+
+Combine multiple models for more robust predictions:
+
+```{r ensemble, eval=FALSE}
+ensemble_spec <- list(
+  fit = function(y, X, ...) {
+    # Train multiple models
+    train_df <- cbind(data.frame(.target = y), X)
+
+    models <- list(
+      lm = lm(.target ~ ., data = train_df),
+      rf = randomForest::randomForest(.target ~ ., data = train_df, ntree = 200)
+    )
+
+    # Optional: train XGBoost
+    X_mat <- model.matrix(~ . - 1, data = X)
+    models$xgb <- xgboost::xgboost(
+      data = X_mat, label = y,
+      nrounds = 100, verbose = 0
+    )
+
+    list(models = models, formula = ~ . - 1)
+  },
+  predict = function(object, newdata, ...) {
+    # Get predictions from each model
+    pred_lm <- predict(object$models$lm, newdata = newdata)
+    pred_rf <- predict(object$models$rf, newdata = newdata)
+
+    X_mat <- model.matrix(object$formula, data = newdata)
+    pred_xgb <- predict(object$models$xgb, X_mat)
+
+    # Simple average (could use weighted average or stacking)
+    (pred_lm + pred_rf + pred_xgb) / 3
+  }
+)
+
+m_ensemble <- fit(
+  value ~ p(12) + month() + rollsum(12),
+  data = ts_data,
+  model = ensemble_spec
+)
+```
+
+### Weighted Ensemble Based on CV Performance
+
+```{r weighted_ensemble, eval=FALSE}
+weighted_ensemble_spec <- list(
+  fit = function(y, X, ...) {
+    train_df <- cbind(data.frame(.target = y), X)
+    n <- nrow(train_df)
+
+    # Train-validation split for weight estimation
+    train_idx <- 1:floor(n * 0.8)
+    val_idx <- (floor(n * 0.8) + 1):n
+
+    train_sub <- train_df[train_idx, ]
+    val_sub <- train_df[val_idx, ]
+    y_val <- val_sub$.target
+
+    # Train models on training subset
+    m_lm <- lm(.target ~ ., data = train_sub)
+    m_rf <- randomForest::randomForest(.target ~ ., data = train_sub, ntree = 200)
+
+    # Evaluate on validation
+    pred_lm_val <- predict(m_lm, val_sub)
+    pred_rf_val <- predict(m_rf, val_sub)
+
+    rmse_lm <- sqrt(mean((y_val - pred_lm_val)^2))
+    rmse_rf <- sqrt(mean((y_val - pred_rf_val)^2))
+
+    # Inverse RMSE weighting
+    w_lm <- 1 / rmse_lm
+    w_rf <- 1 / rmse_rf
+    w_sum <- w_lm + w_rf
+    weights <- c(lm = w_lm / w_sum, rf = w_rf / w_sum)
+
+    # Retrain on full data
+    models <- list(
+      lm = lm(.target ~ ., data = train_df),
+      rf = randomForest::randomForest(.target ~ ., data = train_df, ntree = 200)
+    )
+
+    list(models = models, weights = weights)
+  },
+  predict = function(object, newdata, ...) {
+    pred_lm <- predict(object$models$lm, newdata = newdata)
+    pred_rf <- predict(object$models$rf, newdata = newdata)
+
+    object$weights["lm"] * pred_lm + object$weights["rf"] * pred_rf
+  }
+)
+```
+
+---
+
+## Handling Factor Variables
+
+chronofeat passes factor columns as-is to your model. Different models handle factors differently:
+
+| Model | Factor Handling |
+|-------|-----------------|
+| lm, glm | Native support (creates dummies internally) |
+| randomForest | Native support |
+| ranger | Native support |
+| xgboost | Requires numeric conversion |
+| lightgbm | Native categorical support |
+| glmnet | Requires model.matrix() |
+| keras | Requires model.matrix() |
+
+### Converting Factors for Tree Models
+
+```{r factor_handling, eval=FALSE}
+# For models that need numeric input
+convert_factors <- function(X) {
+  X_processed <- X
+  for (col in names(X)) {
+    if (is.factor(X[[col]])) {
+      X_processed[[col]] <- as.numeric(X[[col]])
+    }
+  }
+  X_processed
+}
+
+# For models that need one-hot encoding
+one_hot_encode <- function(X) {
+  model.matrix(~ . - 1, data = X)
+}
+```
+
+---
+
+## Prediction Intervals
+
+chronofeat's `forecast()` returns point predictions. For prediction intervals, implement them in your model specification:
+
+### Quantile Regression with LightGBM
+
+```{r prediction_intervals, eval=FALSE}
+lgb_quantile_spec <- list(
+  fit = function(y, X, quantiles = c(0.1, 0.5, 0.9), num_iterations = 100, ...) {
+    X_mat <- as.matrix(convert_factors(X))
+
+    models <- list()
+    for (q in quantiles) {
+      dtrain <- lgb.Dataset(data = X_mat, label = y)
+      models[[as.character(q)]] <- lgb.train(
+        data = dtrain,
+        params = list(
+          objective = "quantile",
+          alpha = q,
+          metric = "quantile",
+          verbosity = -1
+        ),
+        nrounds = num_iterations
+      )
+    }
+    list(models = models, quantiles = quantiles)
+  },
+  predict = function(object, newdata, ...) {
+    X_mat <- as.matrix(convert_factors(newdata))
+
+    # Return median (0.5 quantile) as point prediction
+    predict(object$models[["0.5"]], X_mat)
+  }
+)
+
+# Extend forecast to get intervals
+forecast_with_intervals <- function(model, h, quantiles = c(0.1, 0.5, 0.9)) {
+  # ... custom implementation
+}
+```
+
+### Bootstrap Prediction Intervals
+
+```{r bootstrap_intervals, eval=FALSE}
+bootstrap_intervals <- function(model, h, n_boot = 100, conf_level = 0.95) {
+  # Store original predictions
+  fc_orig <- forecast(model, h = h)
+
+  # Bootstrap: resample residuals and reforecast
+  # ... implementation depends on model type
+}
+```
+
+---
+
+## Model Diagnostics
+
+### Checking Feature Importance
+
+```{r diagnostics, eval=FALSE}
+# For XGBoost
+importance_xgb <- xgb.importance(model = m_xgb$model_obj)
+xgb.plot.importance(importance_xgb, top_n = 15)
+
+# For Random Forest
+importance_rf <- importance(m_rf$model_obj)
+varImpPlot(m_rf$model_obj)
+
+# For LightGBM
+importance_lgb <- lgb.importance(m_lgb$model_obj)
+lgb.plot.importance(importance_lgb, top_n = 15)
+```
+
+### Residual Analysis
+
+```{r residuals, eval=FALSE}
+# Get training data with predictions
+train_data <- model$data
+y_actual <- train_data[[model$spec$target]]
+y_pred <- predict(model$model_obj, newdata = train_data[, model$predictors])
+
+residuals <- y_actual - y_pred
+
+# Plot residuals
+par(mfrow = c(2, 2))
+plot(y_pred, residuals, main = "Residuals vs Fitted")
+abline(h = 0, col = "red")
+hist(residuals, main = "Residual Distribution", breaks = 30)
+qqnorm(residuals)
+qqline(residuals)
+acf(residuals, main = "Residual ACF")
+```
+
+---
+
+## Troubleshooting Common Issues
+
+### 1. "Column not found" Error
+
+**Cause**: Feature names in newdata don't match training.
+
+**Solution**: Check that your `predict` function receives the same column names:
+```{r troubleshoot1, eval=FALSE}
+# Debug: print column names
+predict = function(object, newdata, ...) {
+  cat("Columns:", paste(names(newdata), collapse = ", "), "\n")
+  # ...
+}
+```
+
+### 2. NA Predictions
+
+**Cause**: Model returns NA for factor levels not seen in training, or NaN from numeric issues.
+
+**Solution**: Handle unknown levels and validate predictions:
+```{r troubleshoot2, eval=FALSE}
+predict = function(object, newdata, ...) {
+  pred <- predict(object$model, newdata)
+  pred[is.na(pred)] <- object$fallback_value
+  pred
+}
+```
+
+### 3. Factor Level Mismatch
+
+**Cause**: New factor levels appear during forecasting (e.g., forecasting into December when training only had Jan-Nov).
+
+**Solution**: Ensure training data covers all levels, or handle gracefully:
+```{r troubleshoot3, eval=FALSE}
+# chronofeat converts unknown levels to NA automatically
+# Your model should handle NA gracefully or use numeric encoding
+
+# For tree models: convert to numeric
+X[[col]] <- as.numeric(X[[col]])
+```
+
+### 4. Memory Issues with Large Data
+
+**Solution**: Use efficient implementations:
+```{r troubleshoot4, eval=FALSE}
+# Use ranger instead of randomForest
+# Use data.table backend if available
+# Reduce number of trees/iterations for debugging
+```
+
+### 5. Slow Forecasting
+
+**Cause**: Recursive forecasting calls predict() h times per group.
+
+**Solutions**:
+
+- Use C++ accelerated path (default when no exogenous variables)
+- Simplify the model for faster predictions
+- Reduce forecast horizon
+
+---
+
+## Summary
+
+Creating custom model specifications for chronofeat requires:
+
+1. **A `fit` function** that takes `(y, X, ...)` and returns a model object
+2. **A `predict` function** that takes `(object, newdata, ...)` and returns numeric predictions
+
+Key considerations:
+
+- Handle factor columns appropriately for your model type
+- Store any preprocessing parameters (scaling, encoding) in the model object
+- Return predictions as a numeric vector matching the input row count
+- Test your specification on a small subset before running on full data
+
+See the [Advanced Workflows](advanced-workflows.html) article for hyperparameter tuning and production deployment patterns.

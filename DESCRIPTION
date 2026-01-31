@@ -1,0 +1,40 @@
+Package: chronofeat
+Type: Package
+Title: Time-Based Feature Engineering for Forecasting
+Version: 0.6.0
+Authors@R:
+    person("Resul", "Akay", , "resul.akay@quantics.io", role = c("aut", "cre"))
+Description: A flexible, formula-based interface for time series feature engineering
+    and forecasting. Automatically generates temporal features (lags, moving averages,
+    rolling statistics, calendar features) from a concise formula specification.
+    Model-agnostic: works with any R model that accepts a fit/predict interface.
+    Supports multi-group panel data and recursive multi-step prediction.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends:
+    R (>= 3.5.0)
+Imports:
+    dplyr (>= 1.0.0),
+    tidyr (>= 1.0.0),
+    tibble,
+    rlang (>= 0.4.0),
+    slider (>= 0.2.0),
+    generics,
+    stats,
+    utils,
+    Rcpp (>= 1.0.0)
+LinkingTo: Rcpp, RcppArmadillo
+Suggests:
+    ggplot2,
+    randomForest,
+    e1071,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    zoo,
+    pkgdown
+LazyData: true
+Config/testthat/edition: 3
+VignetteBuilder: knitr

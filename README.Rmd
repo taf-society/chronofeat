@@ -1,0 +1,90 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# chronofeat
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/taf-society/chronofeat/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/taf-society/chronofeat/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+**chronofeat** is an R package for time-based feature engineering and forecasting. It provides a flexible, formula-based interface for creating temporal features (lags, moving averages, rolling statistics, calendar features) and works with any R model that has a fit/predict interface.
+
+## Features
+
+- **Formula-based feature specification**: Define features using intuitive syntax like `value ~ p(12) + q(7) + month()`
+- **Model-agnostic**: Works with lm, glm, xgboost, lightgbm, randomForest, or any custom model
+- **Recursive multi-step forecasting**: Automatically generates features at each forecast step
+- **Panel data support**: Handle multiple time series with proper group boundaries
+- **C++ acceleration**: Fast recursive forecasting via Rcpp
+
+## Installation
+
+```r
+# Install from GitHub
+remotes::install_github("taf-society/chronofeat")
+```
+
+## Quick Start
+
+```{r example, eval=FALSE}
+library(chronofeat)
+
+# Load sample data
+data(retail)
+
+# Create TimeSeries object
+ts_data <- TimeSeries(retail, date = "date", groups = "items", frequency = "month")
+
+# Fit a model with formula-based features
+model <- fit(
+ value ~ p(12) + q(7, 12) + month(),
+  data = ts_data,
+  model = lm
+)
+
+# Generate forecasts
+forecasts <- forecast(model, h = 6)
+```
+
+## Formula Syntax
+
+| Syntax | Description |
+|--------|-------------|
+| `p(k)` | k lags of target |
+| `p(1, 7, 12)` | Specific lags |
+| `q(w1, w2)` | Moving averages |
+| `dow()` | Day of week |
+| `month()` | Month |
+| `rollsum(w)` | Rolling sum |
+| `rollsd(w)` | Rolling std dev |
+| `trend(d)` | Polynomial trend |
+| `lag(var, k)` | Lag of exogenous |
+
+## Documentation
+
+Visit the [package website](https://taf-society.github.io/chronofeat/) for:
+
+- [Getting Started](https://taf-society.github.io/chronofeat/articles/getting-started.html)
+- [Building Custom Models](https://taf-society.github.io/chronofeat/articles/custom-models.html)
+- [Feature Engineering Reference](https://taf-society.github.io/chronofeat/articles/feature-engineering.html)
+- [Cross-Validation](https://taf-society.github.io/chronofeat/articles/cross-validation.html)
+
+## Part of TAF Society Ecosystem
+
+chronofeat is part of the [TAF Society](https://taf-society.org/) forecasting ecosystem.
+
+## License
+
+See LICENSE file.

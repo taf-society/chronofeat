@@ -1,0 +1,9 @@
+^examples$
+^\.claude$
+^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^vignettes/articles$
+^LICENSE\.md$

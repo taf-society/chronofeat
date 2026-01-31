@@ -1,0 +1,555 @@
+---
+title: "Data Preprocessing"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data Preprocessing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Overview
+
+Real-world time series data often has issues:
+
+- **Irregular calendars**: Missing dates (weekends, holidays, outages)
+- **Target gaps**: Missing values in the variable you want to forecast
+- **Exogenous gaps**: Missing values in predictor variables
+
+The `TimeSeries()` function provides a complete preprocessing pipeline to handle all three problems in a single, auditable workflow.
+
+```{r setup}
+library(chronofeat)
+library(dplyr)
+```
+
+---
+
+## The TimeSeries Object
+
+`TimeSeries()` creates an object that bundles your data with metadata:
+
+```{r timeseries_basic}
+data(retail)
+
+ts_data <- TimeSeries(
+  data = retail,
+  date = "date",
+  groups = "items",
+  frequency = "month"
+)
+
+ts_data
+```
+
+### What TimeSeries Does
+
+1. **Validates** the date column (must be Date or POSIXct)
+2. **Sorts** data by groups and date (critical for lag calculations)
+3. **Detects or validates** the time frequency
+4. **Optionally** completes the time grid and fills gaps
+
+### Accessing the Data
+
+```{r access}
+# Get the processed data frame
+head(ts_data$data)
+
+# Access metadata
+ts_data$frequency
+ts_data$groups
+ts_data$date
+```
+
+---
+
+## Frequency Detection
+
+TimeSeries can auto-detect frequency or validate your specification:
+
+### Auto-Detection
+
+```{r auto_detect}
+ts_auto <- TimeSeries(
+  data = retail,
+  date = "date",
+  groups = "items"
+  # frequency not specified - will be auto-detected
+)
+```
+
+### Explicit Specification
+
+```{r explicit_freq}
+ts_explicit <- TimeSeries(
+  data = retail,
+  date = "date",
+  groups = "items",
+  frequency = "month"
+)
+```
+
+### Supported Frequencies
+
+| Frequency | Description | Date Type Required |
+|-----------|-------------|-------------------|
+| `"second"` | Per-second | POSIXct |
+| `"minute"` | Per-minute | POSIXct |
+| `"halfhour"` | 30-minute intervals | POSIXct |
+| `"hour"` | Hourly | POSIXct |
+| `"day"` | Daily | Date or POSIXct |
+| `"businessday"` | Weekdays only | Date or POSIXct |
+| `"biweekly"` | Every 2 weeks | Date or POSIXct |
+| `"week"` | Weekly | Date or POSIXct |
+| `"month"` | Monthly | Date or POSIXct |
+| `"quarter"` | Quarterly | Date or POSIXct |
+| `"year"` | Yearly | Date or POSIXct |
+| Numeric | Custom days (e.g., 7) | Date or POSIXct |
+
+---
+
+## Completing the Time Grid
+
+Real data often has missing dates. Use `fill_time = TRUE` to complete the calendar:
+
+```{r fill_time_example}
+# Create data with missing dates
+sales_irregular <- data.frame(
+  store = rep("A", 5),
+  date = as.Date(c('2024-01-01', '2024-01-02', '2024-01-03',
+                   '2024-01-08', '2024-01-09')),  # Missing Jan 4-7
+  sales = c(100, 120, 110, 130, 125)
+)
+
+ts_complete <- TimeSeries(
+  sales_irregular,
+  date = "date",
+  groups = "store",
+  frequency = "day",
+  fill_time = TRUE
+)
+
+ts_complete$data
+```
+
+**What happens:**
+
+- Rows are added for missing dates (2024-01-04 through 2024-01-07)
+- `sales` is NA for the new rows
+- `time_fill_meta` tracks what was added
+
+```{r fill_meta}
+ts_complete$time_fill_meta
+```
+
+---
+
+## Target Gap-Filling
+
+Fill missing values in your target variable using various strategies.
+
+### Basic Usage
+
+```{r target_na_basic}
+# Data with gaps
+sales_with_gaps <- data.frame(
+  date = seq(as.Date('2024-01-01'), by = 'day', length.out = 10),
+  sales = c(100, 120, NA, NA, 150, 160, NA, 180, 190, 200)
+)
+
+ts_filled <- TimeSeries(
+  sales_with_gaps,
+  date = "date",
+  frequency = "day",
+  target = "sales",
+  target_na = list(strategy = "locf")
+)
+
+ts_filled$data
+```
+
+### The `is_imputed` Flag
+
+Every filled value is tracked:
+
+```{r is_imputed}
+# See which values were imputed
+ts_filled$data %>%
+  select(date, sales, sales_is_imputed)
+```
+
+**Use the flag for:**
+
+- Filtering: Train only on real data
+- Modeling: Use as a predictor (`sales_is_imputed` in formula)
+- Weighting: Down-weight imputed observations
+
+### Available Strategies
+
+| Strategy | Description | Best For |
+|----------|-------------|----------|
+| `"locf"` | Last observation carried forward | Sensor outages, sticky values |
+| `"nocb"` | Next observation carried backward | Leading indicators |
+| `"linear"` | Linear interpolation | Smooth, continuous variables |
+| `"zero"` | Replace with 0 | Count data (missing = no events) |
+| `"rolling_mean"` | Rolling mean imputation | Noisy data |
+| `"stl"` | Seasonal decomposition | Seasonal patterns |
+| `"borrow"` | Borrow from peer groups | Panel data cold-start |
+| `"custom"` | User-provided function | Special cases |
+
+### Strategy Examples
+
+#### Last Observation Carried Forward (LOCF)
+
+```{r locf, eval=FALSE}
+ts <- TimeSeries(
+  data, date = "date", frequency = "day",
+  target = "sales",
+  target_na = list(strategy = "locf")
+)
+```
+
+Simple and fast. Good for sensor data with short outages.
+
+#### Linear Interpolation
+
+```{r linear, eval=FALSE}
+ts <- TimeSeries(
+  data, date = "date", frequency = "day",
+  target = "sales",
+  target_na = list(strategy = "linear")
+)
+```
+
+Smooth interpolation between known values. Good for slowly-changing variables.
+
+#### Seasonal Decomposition (STL)
+
+```{r stl, eval=FALSE}
+ts <- TimeSeries(
+  data, date = "date", frequency = "day",
+  target = "sales",
+  target_na = list(
+    strategy = "stl",
+    params = list(period = 7)  # Weekly seasonality
+  )
+)
+```
+
+Uses seasonal pattern to fill gaps. Best for clearly seasonal data.
+
+#### Cross-Series Borrowing
+
+```{r borrow, eval=FALSE}
+# For panel data: fill from peer groups
+ts <- TimeSeries(
+  panel_data,
+  date = "date",
+  groups = "store",
+  frequency = "day",
+  target = "sales",
+  target_na = list(
+    strategy = "borrow",
+    params = list(method = "median")  # Use median of peers
+  )
+)
+```
+
+Uses values from other groups at the same date. Good for cold-start problems.
+
+### Strategy Parameters
+
+Control gap-filling behavior:
+
+```{r params, eval=FALSE}
+ts <- TimeSeries(
+  data, date = "date", frequency = "day",
+  target = "sales",
+  target_na = list(
+    strategy = "locf",
+    params = list(
+      max_gap = 7  # Error if gap > 7 days
+    )
+  )
+)
+```
+
+Common parameters:
+
+- `max_gap`: Maximum consecutive NAs to fill (error if exceeded)
+- `period`: Seasonal period for STL
+- `window`: Window size for rolling_mean
+- `center`: TRUE for centered window, FALSE for right-aligned
+
+---
+
+## Exogenous Gap-Filling
+
+Fill gaps in predictor variables with different strategies per column:
+
+```{r xreg_na}
+retail_with_gaps <- data.frame(
+  date = seq(as.Date('2024-01-01'), by = 'day', length.out = 10),
+  sales = c(100, 120, 130, 140, 150, 160, 170, 180, 190, 200),
+  price = c(10, NA, NA, 10, 12, 12, NA, 12, 12, 12),
+  promo = c(0, 0, 1, 1, NA, NA, 0, 0, 0, 1),
+  temp = c(20, 21, NA, 23, 24, NA, 26, 27, 28, 29)
+)
+
+ts_xreg <- TimeSeries(
+  retail_with_gaps,
+  date = "date",
+  frequency = "day",
+  xreg_na = list(
+    price = list(strategy = "locf"),      # Prices are sticky
+    promo = list(strategy = "zero"),      # Missing = no promotion
+    temp = list(strategy = "linear")      # Smooth weather interpolation
+  )
+)
+
+ts_xreg$data %>%
+  select(date, price, price_is_imputed, promo, promo_is_imputed, temp, temp_is_imputed)
+```
+
+### Strategy Selection Guide
+
+| Data Type | Recommended Strategy |
+|-----------|---------------------|
+| Prices (sticky) | `locf` with `max_gap = 7` |
+| Promotions (binary) | `zero` (missing = no promo) |
+| Weather | `linear` |
+| Count data | `zero` |
+| Sensor readings | `locf` or `rolling_mean` |
+| Seasonal patterns | `stl` |
+| Panel cold-start | `borrow` |
+
+---
+
+## Complete Pipeline Example
+
+Handle all three problems in one call:
+
+```{r complete_pipeline}
+# Messy data: missing dates + target gaps + exogenous gaps
+messy_data <- data.frame(
+  store = rep("A", 7),
+  date = as.Date(c('2024-01-01', '2024-01-02', '2024-01-03',
+                   '2024-01-06', '2024-01-07', '2024-01-08', '2024-01-09')),
+  sales = c(100, 120, NA, 160, 170, NA, 190),
+  price = c(10, 10, 10, NA, 12, 12, 12),
+  promo = c(0, 1, 1, NA, 0, 0, 0)
+)
+
+ts_clean <- TimeSeries(
+  messy_data,
+  date = "date",
+  groups = "store",
+  frequency = "day",
+  fill_time = TRUE,
+  target = "sales",
+  target_na = list(strategy = "locf"),
+  xreg_na = list(
+    price = list(strategy = "locf"),
+    promo = list(strategy = "zero")
+  )
+)
+
+ts_clean
+```
+
+```{r pipeline_result}
+ts_clean$data
+```
+
+---
+
+## Metadata and Auditability
+
+TimeSeries tracks all preprocessing:
+
+```{r metadata}
+# Time grid completion
+ts_clean$time_fill_meta
+
+# Target gap-filling
+ts_clean$target_na_meta
+
+# Exogenous gap-filling
+ts_clean$xreg_na_meta
+```
+
+### Saving Metadata for Reproducibility
+
+```{r save_meta, eval=FALSE}
+# Save preprocessing configuration
+config <- list(
+  created = Sys.time(),
+  frequency = ts_clean$frequency,
+  fill_time = ts_clean$time_fill_meta,
+  target_na = ts_clean$target_na_meta,
+  xreg_na = ts_clean$xreg_na_meta
+)
+
+saveRDS(config, "preprocessing_config.rds")
+```
+
+---
+
+## Integration with fit() and forecast()
+
+`fit()` automatically extracts and uses the processed data:
+
+```{r fit_integration, eval=FALSE}
+ts <- TimeSeries(
+  retail, date = "date", groups = "items",
+  frequency = "month",
+  target = "value",
+  target_na = list(strategy = "locf")
+)
+
+# fit() uses ts$data automatically
+m <- fit(value ~ p(12) + month(), data = ts, model = lm)
+
+# forecast() uses stored frequency for date generation
+fc <- forecast(m, h = 12)
+```
+
+### The is_imputed Flag as a Predictor
+
+```{r imputed_predictor, eval=FALSE}
+# Let the model know which values were imputed
+m <- fit(
+  value ~ p(12) + month() + value_is_imputed,
+  data = ts,
+  model = lm
+)
+```
+
+### Weighting by Imputation Status
+
+```{r weighting, eval=FALSE}
+# Down-weight imputed observations (requires custom model spec)
+weighted_lm_spec <- list(
+  fit = function(y, X, ...) {
+    # Check for is_imputed column
+    if ("value_is_imputed" %in% names(X)) {
+      weights <- ifelse(X$value_is_imputed, 0.5, 1.0)
+      X$value_is_imputed <- NULL  # Remove from predictors
+    } else {
+      weights <- rep(1, length(y))
+    }
+
+    train_df <- cbind(data.frame(.response = y), X)
+    lm(.response ~ ., data = train_df, weights = weights)
+  },
+  predict = function(object, newdata, ...) {
+    newdata$value_is_imputed <- NULL
+    predict(object, newdata = newdata)
+  }
+)
+```
+
+---
+
+## Best Practices
+
+### 1. Validate Preprocessing Results
+
+```{r validate, eval=FALSE}
+# Check imputation rates
+ts$data %>%
+  summarise(
+    pct_sales_imputed = 100 * mean(sales_is_imputed),
+    pct_price_imputed = 100 * mean(price_is_imputed)
+  )
+
+# Check for remaining NAs
+sapply(ts$data, function(x) sum(is.na(x)))
+```
+
+### 2. Use max_gap to Prevent Over-Imputation
+
+```{r max_gap, eval=FALSE}
+# Refuse to fill gaps longer than 7 days
+target_na = list(
+  strategy = "locf",
+  params = list(max_gap = 7)
+)
+```
+
+### 3. Compare Strategies
+
+```{r compare, eval=FALSE}
+# Test different strategies
+ts_locf <- TimeSeries(..., target_na = list(strategy = "locf"))
+ts_linear <- TimeSeries(..., target_na = list(strategy = "linear"))
+ts_stl <- TimeSeries(..., target_na = list(strategy = "stl"))
+
+# Compare forecast accuracy with cross-validation
+cv_locf <- cv_forecast(value ~ p(12), data = ts_locf, model = lm, h = 6)
+cv_linear <- cv_forecast(value ~ p(12), data = ts_linear, model = lm, h = 6)
+cv_stl <- cv_forecast(value ~ p(12), data = ts_stl, model = lm, h = 6)
+```
+
+### 4. Document Preprocessing Decisions
+
+```{r document, eval=FALSE}
+# Record your choices
+preprocessing_notes <- list(
+  target_strategy = "STL with period=7",
+  rationale = "Weekly seasonality detected in autocorrelation",
+  alternatives_tried = c("locf", "linear"),
+  validation = "STL gave lowest CV RMSE"
+)
+```
+
+---
+
+## Warning: Trailing NA After fill_time
+
+If `fill_time = TRUE` adds rows at the end of your series without target values, forecasting will fail:
+
+```{r trailing_na, eval=FALSE}
+# This will warn about trailing NA
+ts <- TimeSeries(
+  data_ending_mid_month,
+  date = "date",
+  frequency = "day",
+  fill_time = TRUE,  # Completes to end of month
+  target = "sales"   # But no target_na specified!
+)
+
+# forecast() will error: "trailing NA"
+```
+
+**Solution**: Either specify `target_na` to fill the gaps, or ensure your data ends with non-NA target values.
+
+---
+
+## Summary
+
+| Parameter | Purpose |
+|-----------|---------|
+| `date` | Name of date column |
+| `groups` | Names of group columns (panel data) |
+| `frequency` | Time frequency (auto-detected if NULL) |
+| `fill_time` | Complete missing dates |
+| `target` | Name of target column for gap-filling |
+| `target_na` | Strategy and params for target gaps |
+| `xreg_na` | Per-column strategies for exogenous gaps |
+
+**Key outputs:**
+
+- `$data` - Processed data frame
+- `$*_is_imputed` columns - Track which values were filled
+- `$*_meta` - Metadata for auditability
+
+See also: `?fill_gaps` for detailed strategy documentation.
