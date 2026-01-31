@@ -394,8 +394,19 @@ TimeSeries <- function(data, date, groups = NULL, frequency = NULL, auto_detect 
       # Count NAs before filling
       n_before <- sum(is.na(data[[col]]))
 
-      # Apply filling per group
-      if (!is.null(groups) && length(groups) > 0) {
+      # Apply filling - special handling for "borrow" which needs cross-series access
+      if (strategy == "borrow") {
+        if (is.null(groups) || length(groups) == 0) {
+          stop("'borrow' strategy for xreg_na requires grouped data (multiple series).")
+        }
+        # Use the grouped borrow function from gap_filling
+        data$.row_id <- seq_len(nrow(data))
+        was_na <- is.na(data[[col]])
+        data <- .fill_borrow_grouped(data, col, date, groups, params)
+        data <- data[order(data$.row_id), , drop = FALSE]
+        data[[paste0(col, "_is_imputed")]] <- !is.na(data[[col]]) & was_na
+        data$.row_id <- NULL
+      } else if (!is.null(groups) && length(groups) > 0) {
         data <- data %>%
           dplyr::group_by(dplyr::across(dplyr::all_of(groups))) %>%
           dplyr::group_modify(~ .fill_column_with_strategy(.x, col, date, strategy, params)) %>%
