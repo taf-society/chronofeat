@@ -8,7 +8,7 @@ test_that("lag calculation is correct in .make_target_feats", {
   feats <- chronofeat:::.make_target_feats(
     y = y,
     target_col = "value",
-    p = 3
+    p = 1:3  # Explicit lag indices (formula parsing expands p(3) to 1:3)
   )
 
   # lag_1 should be the MOST RECENT value: 50
@@ -28,7 +28,7 @@ test_that("lag calculation with exact-size history", {
   feats <- chronofeat:::.make_target_feats(
     y = y,
     target_col = "value",
-    p = 3
+    p = 1:3  # Explicit lag indices
   )
 
   # Should work when length(y) == L (not require length(y) > L)
@@ -44,7 +44,7 @@ test_that("lag calculation with insufficient history", {
   feats <- chronofeat:::.make_target_feats(
     y = y,
     target_col = "value",
-    p = 3
+    p = 1:3  # Explicit lag indices
   )
 
   expect_equal(feats$value_lag_1, 20)

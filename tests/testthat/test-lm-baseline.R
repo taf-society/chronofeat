@@ -113,7 +113,7 @@ test_that("lm with range lags p(1:k) creates k lags", {
   expect_true(all(expected_lags %in% m$predictors))
 })
 
-test_that("lm with single lag p(k) creates only lag_k", {
+test_that("lm with p(k) creates k lags (lag_1 through lag_k)", {
   set.seed(42)
   df <- data.frame(
     date = seq(as.Date("2020-01-01"), by = "day", length.out = 100),
@@ -123,7 +123,22 @@ test_that("lm with single lag p(k) creates only lag_k", {
   ts_obj <- TimeSeries(df, date = "date", frequency = "day")
   m <- fit(value ~ p(5), data = ts_obj, model = lm)
 
-  # p(5) creates only lag_5, not lag_1 through lag_5
+  # p(5) creates lags 1-5 as documented
+  expected_lags <- paste0("value_lag_", 1:5)
+  expect_true(all(expected_lags %in% m$predictors))
+})
+
+test_that("lm with p(c(k)) creates only lag_k (explicit single lag)", {
+  set.seed(42)
+  df <- data.frame(
+    date = seq(as.Date("2020-01-01"), by = "day", length.out = 100),
+    value = rnorm(100, 50, 10)
+  )
+
+  ts_obj <- TimeSeries(df, date = "date", frequency = "day")
+  m <- fit(value ~ p(c(5)), data = ts_obj, model = lm)
+
+  # p(c(5)) creates only lag_5, not lag_1 through lag_5
   expect_true("value_lag_5" %in% m$predictors)
   expect_false("value_lag_1" %in% m$predictors)
   expect_false("value_lag_2" %in% m$predictors)

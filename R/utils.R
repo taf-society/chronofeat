@@ -265,7 +265,7 @@ coerce_numeric_col <- function(df, col) {
         mutate(holiday = 0L)
       hol <- hol %>%
         rename(.hol_join_date = !!date_col) %>%
-        distinct(.hol_join_date, .keep_all = TRUE) %>%
+        distinct(.data$.hol_join_date, .keep_all = TRUE) %>%
         mutate(holiday = 1L)
       result <- result %>%
         left_join(hol, by = ".hol_join_date") %>%
@@ -560,7 +560,11 @@ list_to_named_list <- function(vec, fn_gen, name_gen) {
       # Safe parsing without eval() - only allow numeric patterns
       lags <- if (grepl("^-?\\d+$", inner)) {
         # Single integer: p(12) means 12 lags (1:12), matching documentation
-        seq_len(as.integer(inner))
+        k <- as.integer(inner)
+        if (k < 1) {
+          stop("p(...): lags must be positive integers. Got: ", inner)
+        }
+        seq_len(k)
       } else if (grepl("^-?\\d+:-?\\d+$", inner)) {
         # Range: p(1:12)
         parts <- as.integer(strsplit(inner, ":")[[1]])

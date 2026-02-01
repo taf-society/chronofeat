@@ -1,10 +1,10 @@
 # Test lag specification in p() parameter
 # Tests the three supported forms:
-#   p(12)           - single lag only
-#   p(1:12)         - range of lags
+#   p(12)             - k lags (lag_1 through lag_12)
+#   p(1:12)           - range of lags (equivalent to p(12))
 #   p(c(1, 4, 6, 12)) - explicit set of lags
 
-test_that("p(12) creates only lag_12 (single lag)", {
+test_that("p(12) creates lags 1 through 12 (k lags)", {
   skip_if_not_installed("dplyr")
 
   set.seed(123)
@@ -15,19 +15,16 @@ test_that("p(12) creates only lag_12 (single lag)", {
 
   ts_obj <- TimeSeries(df, date = "date", frequency = "day")
 
-  # Fit with p(12) - should create only lag_12
+  # Fit with p(12) - creates 12 lags (lag_1 through lag_12) as documented
+  m <- fit(value ~ p(12), data = ts_obj, model = test_model_lm())
 
-m <- fit(value ~ p(12), data = ts_obj, model = test_model_lm())
+  # Check that all lags 1-12 are in the predictors
+  expected_lags <- paste0("value_lag_", 1:12)
+  expect_true(all(expected_lags %in% m$predictors))
+  expect_equal(length(m$predictors), 12)
 
-  # Check that only lag_12 is in the predictors
-  expect_true("value_lag_12" %in% m$predictors)
-  expect_equal(length(m$predictors), 1)
-  expect_false("value_lag_1" %in% m$predictors)
-  expect_false("value_lag_6" %in% m$predictors)
-  expect_false("value_lag_11" %in% m$predictors)
-
-  # Verify the spec stored the correct lag indices
-  expect_equal(m$spec$p, 12L)
+  # Verify the spec stored the expanded lag indices
+  expect_equal(m$spec$p, 1:12)
 })
 
 test_that("p(1:12) creates lags 1 through 12 (range)", {
@@ -236,7 +233,7 @@ test_that("p() rejects invalid inputs", {
   )
 })
 
-test_that("single lag 1 works correctly", {
+test_that("p(1) creates just lag_1", {
   skip_if_not_installed("dplyr")
 
   set.seed(111)
@@ -247,7 +244,7 @@ test_that("single lag 1 works correctly", {
 
   ts_obj <- TimeSeries(df, date = "date", frequency = "day")
 
-  # Fit with single lag 1
+  # Fit with p(1) - creates 1 lag (just lag_1)
   m <- fit(value ~ p(1), data = ts_obj, model = test_model_lm())
 
   expect_true("value_lag_1" %in% m$predictors)
@@ -259,7 +256,7 @@ test_that("single lag 1 works correctly", {
   expect_equal(nrow(fc), 5)
 })
 
-test_that("high single lag works correctly", {
+test_that("p(50) creates 50 lags", {
   skip_if_not_installed("dplyr")
 
   set.seed(222)
@@ -270,10 +267,35 @@ test_that("high single lag works correctly", {
 
   ts_obj <- TimeSeries(df, date = "date", frequency = "day")
 
-  # Fit with single high lag (e.g., seasonal lag 365 days - but we use 50 for test)
+  # Fit with p(50) - creates lags 1-50 as documented
   m <- fit(value ~ p(50), data = ts_obj, model = test_model_lm())
 
   expect_true("value_lag_50" %in% m$predictors)
+  expect_true("value_lag_1" %in% m$predictors)
+  expect_equal(length(m$predictors), 50)
+  expect_equal(m$spec$p, 1:50)
+
+  # Forecast should work
+  fc <- forecast(m, h = 5)
+  expect_equal(nrow(fc), 5)
+})
+
+test_that("p(c(k)) creates only lag_k (explicit single lag)", {
+  skip_if_not_installed("dplyr")
+
+  set.seed(222)
+  df <- data.frame(
+    date = seq(as.Date("2020-01-01"), by = "day", length.out = 200),
+    value = cumsum(rnorm(200, 1, 2))
+  )
+
+  ts_obj <- TimeSeries(df, date = "date", frequency = "day")
+
+  # Fit with p(c(50)) - creates only lag_50 (explicit set with one element)
+  m <- fit(value ~ p(c(50)), data = ts_obj, model = test_model_lm())
+
+  expect_true("value_lag_50" %in% m$predictors)
+  expect_false("value_lag_1" %in% m$predictors)
   expect_equal(length(m$predictors), 1)
   expect_equal(m$spec$p, 50L)
 
