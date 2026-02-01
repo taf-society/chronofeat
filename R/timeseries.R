@@ -635,14 +635,31 @@ print.TimeSeries <- function(x, ...) {
          "Remove duplicate timestamps or specify frequency explicitly.")
   }
 
-  # Check for any duplicates that could skew detection
-  d_check <- data[[date]]
-  d_check <- d_check[!is.na(d_check)]
-  if (anyDuplicated(d_check) > 0) {
-    n_dups <- sum(duplicated(d_check))
-    warning("Duplicate timestamps detected (", n_dups, " duplicates). ",
-            "Frequency detection may be inaccurate. Consider removing duplicates ",
-            "or specifying frequency explicitly.", call. = FALSE)
+  # Check for any duplicates that could skew detection (within groups, not across)
+  if (!is.null(groups) && length(groups) > 0) {
+    # For grouped data, check duplicates within each group
+    dup_check <- data %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(groups))) %>%
+      dplyr::summarise(
+        n_dups = sum(duplicated(.data[[date]][!is.na(.data[[date]])])),
+        .groups = "drop"
+      )
+    total_dups <- sum(dup_check$n_dups)
+    if (total_dups > 0) {
+      warning("Duplicate timestamps detected within groups (", total_dups, " total duplicates). ",
+              "Frequency detection may be inaccurate. Consider removing duplicates ",
+              "or specifying frequency explicitly.", call. = FALSE)
+    }
+  } else {
+    # For ungrouped data, check globally
+    d_check <- data[[date]]
+    d_check <- d_check[!is.na(d_check)]
+    if (anyDuplicated(d_check) > 0) {
+      n_dups <- sum(duplicated(d_check))
+      warning("Duplicate timestamps detected (", n_dups, " duplicates). ",
+              "Frequency detection may be inaccurate. Consider removing duplicates ",
+              "or specifying frequency explicitly.", call. = FALSE)
+    }
   }
 
   # Route to appropriate detection based on datetime type

@@ -255,6 +255,9 @@ coerce_numeric_col <- function(df, col) {
       hol[[first_col]] <- as.Date(hol[[first_col]])
       names(hol)[1] <- date_col
     }
+    # Deduplicate holidays to prevent row expansion during join
+    hol <- hol %>% distinct()
+
     # For POSIXct series, join on date part only (holidays are typically daily)
     if (is_datetime) {
       result <- result %>%
@@ -262,6 +265,7 @@ coerce_numeric_col <- function(df, col) {
         mutate(holiday = 0L)
       hol <- hol %>%
         rename(.hol_join_date = !!date_col) %>%
+        distinct(.hol_join_date, .keep_all = TRUE) %>%
         mutate(holiday = 1L)
       result <- result %>%
         left_join(hol, by = ".hol_join_date") %>%
@@ -270,7 +274,7 @@ coerce_numeric_col <- function(df, col) {
     } else {
       result <- result %>%
         mutate(holiday = 0L) %>%
-        left_join(hol %>% mutate(holiday = 1L), by = date_col) %>%
+        left_join(hol %>% distinct(!!rlang::sym(date_col), .keep_all = TRUE) %>% mutate(holiday = 1L), by = date_col) %>%
         mutate(holiday = coalesce(holiday.y, holiday.x)) %>%
         select(-any_of(c("holiday.x", "holiday.y")))
     }

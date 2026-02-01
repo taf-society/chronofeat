@@ -256,12 +256,18 @@ cv_forecast <- function(formula,
 
     join_by_cols <- if (!is.null(groups_chr)) c(date_col, groups_chr) else date_col
 
+    # Handle case where forecast column has same name as target
+    # Rename forecast column temporarily to avoid .x/.y suffix issues
+    fc_renamed <- fc %>% select(all_of(c(date_col, groups_chr, fc_col)))
+    if (fc_col == target_col) {
+      fc_col_temp <- paste0(".fc_", fc_col)
+      names(fc_renamed)[names(fc_renamed) == fc_col] <- fc_col_temp
+      fc_col <- fc_col_temp
+    }
+
     eval_data <- split$test %>%
       select(all_of(c(date_col, groups_chr, target_col))) %>%
-      inner_join(
-        fc %>% select(all_of(c(date_col, groups_chr, fc_col))),
-        by = join_by_cols
-      )
+      inner_join(fc_renamed, by = join_by_cols)
 
     if (nrow(eval_data) == 0) {
       warning(sprintf("Fold %d: No matching forecast dates found", i))

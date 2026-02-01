@@ -55,6 +55,9 @@
     # Ungrouped: single series
     d <- history[[date_col]]
     d <- d[!is.na(d)]
+    if (length(d) == 0) {
+      stop("Cannot generate future dates: all dates are NA.", call. = FALSE)
+    }
     last_date <- tail(d, 1)
     tibble::tibble(!!rlang::sym(date_col) := .generate_future_dates_stable(last_date, h, frequency, d))
   }
@@ -398,6 +401,10 @@ recursive_forecast_dt <- function(model_obj,
         xr_match <- XF_grp %>% filter(rlang::.data[[date_col]] == next_d)
         if (nrow(xr_match) == 1L) {
           xr_match
+        } else if (nrow(xr_match) > 1L) {
+          # Duplicate dates in future_xreg - error instead of silently using NA
+          stop("Duplicate dates found in future_xreg for date ", next_d,
+               ". future_xreg must have exactly one row per date (per group).", call. = FALSE)
         } else {
           # Missing xreg: create row with type-aware NAs
           exclude_cols <- if (!is.null(groups_chr)) c(groups_chr, date_col) else date_col
