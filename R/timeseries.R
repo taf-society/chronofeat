@@ -628,10 +628,21 @@ print.TimeSeries <- function(x, ...) {
     stop("Cannot detect frequency: insufficient data.")
   }
 
-  # Check for duplicate timestamps (median_diff = 0)
+  # Check for duplicate timestamps
+  # median_diff == 0 catches severe cases, but also warn about sparse duplicates
   if (median_diff == 0) {
-    stop("Cannot detect frequency: duplicate timestamps detected. ",
+    stop("Cannot detect frequency: duplicate timestamps detected (median diff is 0). ",
          "Remove duplicate timestamps or specify frequency explicitly.")
+  }
+
+  # Check for any duplicates that could skew detection
+  d_check <- data[[date]]
+  d_check <- d_check[!is.na(d_check)]
+  if (anyDuplicated(d_check) > 0) {
+    n_dups <- sum(duplicated(d_check))
+    warning("Duplicate timestamps detected (", n_dups, " duplicates). ",
+            "Frequency detection may be inaccurate. Consider removing duplicates ",
+            "or specifying frequency explicitly.", call. = FALSE)
   }
 
   # Route to appropriate detection based on datetime type
@@ -669,10 +680,13 @@ print.TimeSeries <- function(x, ...) {
     # Could be daily or business day - check weekend pattern if data available
     # Use numeric wday (0=Sunday, 6=Saturday) for locale-independence
     if (!is.null(data) && !is.null(date)) {
-      wday_values <- as.POSIXlt(data[[date]])$wday
-      has_weekends <- any(wday_values %in% c(0, 6))
-      if (!has_weekends) {
-        return("businessday")
+      dates_clean <- data[[date]][!is.na(data[[date]])]
+      if (length(dates_clean) > 0) {
+        wday_values <- as.POSIXlt(dates_clean)$wday
+        has_weekends <- any(wday_values %in% c(0, 6))
+        if (!has_weekends) {
+          return("businessday")
+        }
       }
     }
     return("day")
@@ -702,10 +716,13 @@ print.TimeSeries <- function(x, ...) {
   if (abs(median_diff_days - 1) < tol) {
     # Could be daily or business day - check weekend pattern if data available
     if (!is.null(data) && !is.null(date)) {
-      wday_values <- as.POSIXlt(data[[date]])$wday
-      has_weekends <- any(wday_values %in% c(0, 6))
-      if (!has_weekends) {
-        return("businessday")
+      dates_clean <- data[[date]][!is.na(data[[date]])]
+      if (length(dates_clean) > 0) {
+        wday_values <- as.POSIXlt(dates_clean)$wday
+        has_weekends <- any(wday_values %in% c(0, 6))
+        if (!has_weekends) {
+          return("businessday")
+        }
       }
     }
     return("day")

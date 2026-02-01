@@ -454,17 +454,21 @@ list_to_named_list <- function(vec, fn_gen, name_gen) {
       step_num <- as.integer(stats::median(diff(d), na.rm = TRUE))
       # For POSIXct, diff() returns seconds; for Date, diff() returns days
       if (is_datetime) {
-        # step_num is in seconds for POSIXct
-        return(last_date + seq_len(h) * step_num)
+        # Use seq.POSIXt for DST-safe date arithmetic
+        # Convert seconds to days for seq() (approximate, but DST-aware)
+        step_days <- step_num / 86400
+        future_dates <- seq(last_date, by = paste(step_days, "days"), length.out = h + 1)
+        return(future_dates[-1])
       } else {
         return(last_date + seq_len(h) * step_num)
       }
     }
   }
 
-  # Default fallback: 1 day (or 1 day in seconds for POSIXct)
+  # Default fallback: 1 day (DST-safe for POSIXct)
   if (is_datetime) {
-    return(last_date + seq_len(h) * 86400)  # 1 day in seconds
+    future_dates <- seq(last_date, by = "1 day", length.out = h + 1)
+    return(future_dates[-1])
 
   } else {
     return(last_date + seq_len(h))

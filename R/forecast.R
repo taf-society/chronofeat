@@ -237,6 +237,18 @@ recursive_forecast_dt <- function(model_obj,
     } else {
       stop("Provide `h` when future_xreg is NULL.")
     }
+  } else if (!is.null(future_xreg)) {
+    # Validate future_xreg horizon matches h when both are provided
+    Ftmp <- tidyr::as_tibble(future_xreg) %>% arrange(across(all_of(c(groups_chr, date_col))))
+    n_per_grp <- Ftmp %>% count(across(all_of(groups_chr))) %>% pull(n)
+    if (length(unique(n_per_grp)) != 1L) {
+      stop("future_xreg must have identical horizon per group. Got: ",
+           paste(unique(n_per_grp), collapse = ", "), " rows per group.")
+    }
+    xreg_h <- unique(n_per_grp)
+    if (xreg_h != h) {
+      stop("future_xreg horizon (", xreg_h, " rows per group) does not match h (", h, ").")
+    }
   }
 
   # Build future base grid
