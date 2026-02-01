@@ -210,7 +210,9 @@ for forecasting:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check what predictors were created</span></span>
 <span><span class="va">model</span><span class="op">$</span><span class="va">predictors</span></span>
-<span><span class="co">#&gt; [1] "value_lag_12" "value_ma_7"   "value_ma_12"  "month"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "value_lag_1"  "value_lag_2"  "value_lag_3"  "value_lag_4"  "value_lag_5" </span></span>
+<span><span class="co">#&gt;  [6] "value_lag_6"  "value_lag_7"  "value_lag_8"  "value_lag_9"  "value_lag_10"</span></span>
+<span><span class="co">#&gt; [11] "value_lag_11" "value_lag_12" "value_ma_7"   "value_ma_12"  "month"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-3-generate-forecasts">Step 3: Generate Forecasts<a class="anchor" aria-label="anchor" href="#step-3-generate-forecasts"></a>
@@ -219,16 +221,520 @@ for forecasting:</p>
 predictions:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/forecast.html" class="external-link">forecast</a></span><span class="op">(</span><span class="va">model</span>, h <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
+<span><span class="co">#&gt; Warning in predict.lm(object, newdata = newdata, ...): prediction from</span></span>
+<span><span class="co">#&gt; rank-deficient fit; attr(*, "non-estim") has doubtful cases</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fc</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
 <span><span class="co">#&gt;   items date       value_forecast</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> V10   2010-01-01           384.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> V10   2010-02-01           305.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> V10   2010-03-01           354.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> V10   2010-04-01           393.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> V10   2010-05-01           427.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> V10   2010-06-01           403.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> V10   2010-01-01           380.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> V10   2010-02-01           357.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> V10   2010-03-01           344.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> V10   2010-04-01           364.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> V10   2010-05-01           378.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> V10   2010-06-01           409.</span></span></code></pre></div>
 <p>The forecast is recursive: each predicted value becomes history for
 generating features at the next step.</p>
 </div>

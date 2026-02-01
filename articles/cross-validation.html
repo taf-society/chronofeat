@@ -135,12 +135,12 @@ proper time series cross-validation.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Metrics by fold:</span></span>
 <span><span class="co">#&gt;  fold train_start  train_end test_start   test_end n_train n_test     rmse</span></span>
-<span><span class="co">#&gt;     1  1982-04-01 2007-06-01 2007-07-01 2007-12-01   12726    252 36.54537</span></span>
-<span><span class="co">#&gt;     2  1982-04-01 2007-12-01 2008-01-01 2008-06-01   12978    252 43.84257</span></span>
-<span><span class="co">#&gt;     3  1982-04-01 2008-06-01 2008-07-01 2008-12-01   13230    252 71.45520</span></span>
-<span><span class="co">#&gt;     4  1982-04-01 2008-12-01 2009-01-01 2009-06-01   13482    252 51.45988</span></span>
-<span><span class="co">#&gt;     5  1982-04-01 2009-06-01 2009-07-01 2009-12-01   13734    252 57.48774</span></span>
-<span><span class="co">#&gt;     0        &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;      NA   1260 53.50989</span></span></code></pre></div>
+<span><span class="co">#&gt;     1  1982-04-01 2007-06-01 2007-07-01 2007-12-01   12726    252 44.98922</span></span>
+<span><span class="co">#&gt;     2  1982-04-01 2007-12-01 2008-01-01 2008-06-01   12978    252 43.20317</span></span>
+<span><span class="co">#&gt;     3  1982-04-01 2008-06-01 2008-07-01 2008-12-01   13230    252 64.45866</span></span>
+<span><span class="co">#&gt;     4  1982-04-01 2008-12-01 2009-01-01 2009-06-01   13482    252 54.92877</span></span>
+<span><span class="co">#&gt;     5  1982-04-01 2009-06-01 2009-07-01 2009-12-01   13734    252 62.57279</span></span>
+<span><span class="co">#&gt;     0        &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;      NA   1260 54.73205</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="understanding-the-output">Understanding the Output<a class="anchor" aria-label="anchor" href="#understanding-the-output"></a>
 </h3>
@@ -158,12 +158,12 @@ analysis</li>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cv_results</span><span class="op">$</span><span class="va">metrics</span></span>
 <span><span class="co">#&gt;   fold train_start  train_end test_start   test_end n_train n_test     rmse</span></span>
-<span><span class="co">#&gt; 1    1  1982-04-01 2007-06-01 2007-07-01 2007-12-01   12726    252 36.54537</span></span>
-<span><span class="co">#&gt; 2    2  1982-04-01 2007-12-01 2008-01-01 2008-06-01   12978    252 43.84257</span></span>
-<span><span class="co">#&gt; 3    3  1982-04-01 2008-06-01 2008-07-01 2008-12-01   13230    252 71.45520</span></span>
-<span><span class="co">#&gt; 4    4  1982-04-01 2008-12-01 2009-01-01 2009-06-01   13482    252 51.45988</span></span>
-<span><span class="co">#&gt; 5    5  1982-04-01 2009-06-01 2009-07-01 2009-12-01   13734    252 57.48774</span></span>
-<span><span class="co">#&gt; 6    0        &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;      NA   1260 53.50989</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    1  1982-04-01 2007-06-01 2007-07-01 2007-12-01   12726    252 44.98922</span></span>
+<span><span class="co">#&gt; 2    2  1982-04-01 2007-12-01 2008-01-01 2008-06-01   12978    252 43.20317</span></span>
+<span><span class="co">#&gt; 3    3  1982-04-01 2008-06-01 2008-07-01 2008-12-01   13230    252 64.45866</span></span>
+<span><span class="co">#&gt; 4    4  1982-04-01 2008-12-01 2009-01-01 2009-06-01   13482    252 54.92877</span></span>
+<span><span class="co">#&gt; 5    5  1982-04-01 2009-06-01 2009-07-01 2009-12-01   13734    252 62.57279</span></span>
+<span><span class="co">#&gt; 6    0        &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;       &lt;NA&gt;      NA   1260 54.73205</span></span></code></pre></div>
 <ul>
 <li>
 <code>fold = 0</code> is the overall (weighted average) metric</li>
@@ -313,11 +313,11 @@ Fold 3:       [----Train----][Test]</code></pre>
 <span><span class="co">#&gt; ====================================</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Metric: rmse</span></span>
-<span><span class="co">#&gt;   Mean:   52.1582</span></span>
-<span><span class="co">#&gt;   Median: 51.4599</span></span>
-<span><span class="co">#&gt;   SD:     13.3620</span></span>
-<span><span class="co">#&gt;   Min:    36.5454</span></span>
-<span><span class="co">#&gt;   Max:    71.4552</span></span></code></pre></div>
+<span><span class="co">#&gt;   Mean:   54.0305</span></span>
+<span><span class="co">#&gt;   Median: 54.9288</span></span>
+<span><span class="co">#&gt;   SD:     9.7660</span></span>
+<span><span class="co">#&gt;   Min:    43.2032</span></span>
+<span><span class="co">#&gt;   Max:    64.4587</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="predictions-by-fold">Predictions by Fold<a class="anchor" aria-label="anchor" href="#predictions-by-fold"></a>
@@ -337,12 +337,12 @@ Fold 3:       [----Train----][Test]</code></pre>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt;   date       items actual predicted  fold</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2008-07-01 V10     330.      321.     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2008-08-01 V10     310.      304.     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2008-07-01 V10     330.      323.     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2008-08-01 V10     310.      305.     1</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2008-09-01 V10     326.      316.     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2008-10-01 V10     342.      363.     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2008-11-01 V10     352.      367.     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2008-12-01 V10     535.      518.     1</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2008-10-01 V10     342.      358.     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2008-11-01 V10     352.      366.     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2008-12-01 V10     535.      515.     1</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="per-step-accuracy">Per-Step Accuracy<a class="anchor" aria-label="anchor" href="#per-step-accuracy"></a>

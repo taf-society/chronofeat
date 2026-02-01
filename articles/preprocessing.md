@@ -191,6 +191,12 @@ ts_complete$time_fill_meta
 #> $n_added
 #> [1] 4
 #> 
+#> $n_weekends_removed
+#> [1] 0
+#> 
+#> $n_net_change
+#> [1] 4
+#> 
 #> $by
 #> [1] "day"
 #> 
@@ -517,6 +523,12 @@ TimeSeries tracks all preprocessing:
 # Time grid completion
 ts_clean$time_fill_meta
 #> $n_added
+#> [1] 2
+#> 
+#> $n_weekends_removed
+#> [1] 0
+#> 
+#> $n_net_change
 #> [1] 2
 #> 
 #> $by

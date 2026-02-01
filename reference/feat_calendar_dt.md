@@ -14,7 +14,9 @@ feat_calendar_dt(
   woy = FALSE,
   month = TRUE,
   eom = TRUE,
-  dom = FALSE
+  dom = FALSE,
+  hod = FALSE,
+  moh = FALSE
 )
 ```
 
@@ -26,11 +28,11 @@ feat_calendar_dt(
 
 - date:
 
-  Symbol or character naming the date column (must be Date class)
+  Symbol or character naming the date column (Date or POSIXct class)
 
 - dow:
 
-  Logical, add day of week as ordered factor (Monday-Sunday)
+  Logical, add day of week as ordered factor (1=Monday, 7=Sunday)
 
 - woy:
 
@@ -48,6 +50,14 @@ feat_calendar_dt(
 
   Logical, add day of month (1-31)
 
+- hod:
+
+  Logical, add hour of day (0-23) - requires POSIXct
+
+- moh:
+
+  Logical, add minute of hour (0-59) - requires POSIXct
+
 ## Value
 
 Data frame with calendar features added
@@ -63,5 +73,8 @@ df_cal <- feat_calendar_dt(df, date = date)
 df_cal <- feat_calendar_dt(df, date = date,
                             dow = TRUE, woy = TRUE, month = TRUE,
                             eom = TRUE, dom = TRUE)
+
+# Add sub-daily features for POSIXct data
+df_cal <- feat_calendar_dt(df, date = datetime, hod = TRUE, moh = TRUE)
 } # }
 ```

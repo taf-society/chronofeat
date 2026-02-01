@@ -39,7 +39,9 @@ Create lagged values of the target variable.
 # Create 12 consecutive lags (lag_1 through lag_12)
 m <- fit(value ~ p(12), data = ts_data, model = lm)
 m$predictors
-#> [1] "value_lag_12"
+#>  [1] "value_lag_1"  "value_lag_2"  "value_lag_3"  "value_lag_4"  "value_lag_5" 
+#>  [6] "value_lag_6"  "value_lag_7"  "value_lag_8"  "value_lag_9"  "value_lag_10"
+#> [11] "value_lag_11" "value_lag_12"
 ```
 
 ``` r
@@ -150,12 +152,16 @@ Add polynomial trend features (time index raised to powers).
 # Linear trend
 m <- fit(value ~ p(12) + trend(1), data = ts_data, model = lm)
 m$predictors
-#> [1] "value_lag_12" "trend1"
+#>  [1] "value_lag_1"  "value_lag_2"  "value_lag_3"  "value_lag_4"  "value_lag_5" 
+#>  [6] "value_lag_6"  "value_lag_7"  "value_lag_8"  "value_lag_9"  "value_lag_10"
+#> [11] "value_lag_11" "value_lag_12" "trend1"
 
 # Quadratic trend
 m <- fit(value ~ p(12) + trend(1, 2), data = ts_data, model = lm)
 m$predictors
-#> [1] "value_lag_12" "trend1"       "trend2"
+#>  [1] "value_lag_1"  "value_lag_2"  "value_lag_3"  "value_lag_4"  "value_lag_5" 
+#>  [6] "value_lag_6"  "value_lag_7"  "value_lag_8"  "value_lag_9"  "value_lag_10"
+#> [11] "value_lag_11" "value_lag_12" "trend1"       "trend2"
 ```
 
 **How it works:**

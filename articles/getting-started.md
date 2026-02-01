@@ -129,7 +129,9 @@ forecasting:
 ``` r
 # Check what predictors were created
 model$predictors
-#> [1] "value_lag_12" "value_ma_7"   "value_ma_12"  "month"
+#>  [1] "value_lag_1"  "value_lag_2"  "value_lag_3"  "value_lag_4"  "value_lag_5" 
+#>  [6] "value_lag_6"  "value_lag_7"  "value_lag_8"  "value_lag_9"  "value_lag_10"
+#> [11] "value_lag_11" "value_lag_12" "value_ma_7"   "value_ma_12"  "month"
 ```
 
 ### Step 3: Generate Forecasts
@@ -139,16 +141,520 @@ to generate multi-step ahead predictions:
 
 ``` r
 fc <- forecast(model, h = 6)
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
+#> Warning in predict.lm(object, newdata = newdata, ...): prediction from
+#> rank-deficient fit; attr(*, "non-estim") has doubtful cases
 head(fc)
 #> # A tibble: 6 × 3
 #>   items date       value_forecast
 #>   <fct> <date>              <dbl>
-#> 1 V10   2010-01-01           384.
-#> 2 V10   2010-02-01           305.
-#> 3 V10   2010-03-01           354.
-#> 4 V10   2010-04-01           393.
-#> 5 V10   2010-05-01           427.
-#> 6 V10   2010-06-01           403.
+#> 1 V10   2010-01-01           380.
+#> 2 V10   2010-02-01           357.
+#> 3 V10   2010-03-01           344.
+#> 4 V10   2010-04-01           364.
+#> 5 V10   2010-05-01           378.
+#> 6 V10   2010-06-01           409.
 ```
 
 The forecast is recursive: each predicted value becomes history for

@@ -111,7 +111,9 @@ during <code><a href="../reference/fit.html">fit()</a></code> and regenerated id
 <code class="sourceCode R"><span><span class="co"># Create 12 consecutive lags (lag_1 through lag_12)</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit.html">fit</a></span><span class="op">(</span><span class="va">value</span> <span class="op">~</span> <span class="fu">p</span><span class="op">(</span><span class="fl">12</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">ts_data</span>, model <span class="op">=</span> <span class="va">lm</span><span class="op">)</span></span>
 <span><span class="va">m</span><span class="op">$</span><span class="va">predictors</span></span>
-<span><span class="co">#&gt; [1] "value_lag_12"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "value_lag_1"  "value_lag_2"  "value_lag_3"  "value_lag_4"  "value_lag_5" </span></span>
+<span><span class="co">#&gt;  [6] "value_lag_6"  "value_lag_7"  "value_lag_8"  "value_lag_9"  "value_lag_10"</span></span>
+<span><span class="co">#&gt; [11] "value_lag_11" "value_lag_12"</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create specific lags only</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit.html">fit</a></span><span class="op">(</span><span class="va">value</span> <span class="op">~</span> <span class="fu">p</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">7</span>, <span class="fl">12</span>, <span class="fl">24</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">ts_data</span>, model <span class="op">=</span> <span class="va">lm</span><span class="op">)</span></span>
@@ -220,12 +222,16 @@ incomplete windows produce NA.</p>
 <code class="sourceCode R"><span><span class="co"># Linear trend</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit.html">fit</a></span><span class="op">(</span><span class="va">value</span> <span class="op">~</span> <span class="fu">p</span><span class="op">(</span><span class="fl">12</span><span class="op">)</span> <span class="op">+</span> <span class="fu">trend</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">ts_data</span>, model <span class="op">=</span> <span class="va">lm</span><span class="op">)</span></span>
 <span><span class="va">m</span><span class="op">$</span><span class="va">predictors</span></span>
-<span><span class="co">#&gt; [1] "value_lag_12" "trend1"</span></span>
+<span><span class="co">#&gt;  [1] "value_lag_1"  "value_lag_2"  "value_lag_3"  "value_lag_4"  "value_lag_5" </span></span>
+<span><span class="co">#&gt;  [6] "value_lag_6"  "value_lag_7"  "value_lag_8"  "value_lag_9"  "value_lag_10"</span></span>
+<span><span class="co">#&gt; [11] "value_lag_11" "value_lag_12" "trend1"</span></span>
 <span></span>
 <span><span class="co"># Quadratic trend</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit.html">fit</a></span><span class="op">(</span><span class="va">value</span> <span class="op">~</span> <span class="fu">p</span><span class="op">(</span><span class="fl">12</span><span class="op">)</span> <span class="op">+</span> <span class="fu">trend</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">ts_data</span>, model <span class="op">=</span> <span class="va">lm</span><span class="op">)</span></span>
 <span><span class="va">m</span><span class="op">$</span><span class="va">predictors</span></span>
-<span><span class="co">#&gt; [1] "value_lag_12" "trend1"       "trend2"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "value_lag_1"  "value_lag_2"  "value_lag_3"  "value_lag_4"  "value_lag_5" </span></span>
+<span><span class="co">#&gt;  [6] "value_lag_6"  "value_lag_7"  "value_lag_8"  "value_lag_9"  "value_lag_10"</span></span>
+<span><span class="co">#&gt; [11] "value_lag_11" "value_lag_12" "trend1"       "trend2"</span></span></code></pre></div>
 <p><strong>How it works:</strong></p>
 <ul>
 <li>
